@@ -1,8 +1,17 @@
 import type { Metadata } from "next";
 import { type ReactNode } from "react";
+import { Urbanist } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+
+// The live site uses Urbanist throughout; load it the same way here.
+const urbanist = Urbanist({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-urbanist",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Free EU Sustainability Courses | BoostMySkills",
@@ -12,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={urbanist.variable}>
       <body>
         <a
           href="#main"

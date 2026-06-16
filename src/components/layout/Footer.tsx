@@ -4,57 +4,60 @@ import { images, footerColumns, externalLinks } from "@/data/site";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-line bg-surface">
+    <footer className="border-t border-line bg-white">
       <Container className="grid gap-10 py-14 md:grid-cols-4">
-        <div className="space-y-4">
+        <div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={images.logo} alt="BoostMySkills" className="h-10 w-auto" />
-          <p className="max-w-xs text-sm leading-relaxed text-muted">
-            Free, fully funded sustainability courses developed by pan-European and
-            international universities.
-          </p>
-          <a
-            href={externalLinks.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="RES4CITY on LinkedIn"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-line bg-white transition-colors hover:border-primary"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={images.linkedin} alt="" className="h-4 w-4" />
-          </a>
+          <img src={images.logo} alt="BoostMySkills" className="h-14 w-auto" />
         </div>
 
-        {footerColumns.map((column) => (
-          <div key={column.heading}>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-ink">
-              {column.heading}
-            </h3>
-            <ul className="mt-4 space-y-2.5">
-              {column.links.map((link) => (
-                <li key={link.label}>
-                  {"external" in link && link.external ? (
+        {footerColumns.map((column) => {
+          const isContact = column.heading === "Get in touch";
+          return (
+            <div key={column.heading || "links"}>
+              {column.heading ? (
+                <h3 className="text-xl font-bold text-ink">{column.heading}</h3>
+              ) : null}
+              <ul className={`space-y-2.5 ${column.heading ? "mt-4" : ""}`}>
+                {column.links.map((link) => (
+                  <li key={link.label}>
+                    {"external" in link && link.external ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold text-ink transition-colors hover:text-primary"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={link.href}
+                        className="font-semibold text-ink transition-colors hover:text-primary"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
+                  </li>
+                ))}
+                {isContact ? (
+                  <li>
                     <a
-                      href={link.href}
+                      href={externalLinks.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-muted transition-colors hover:text-primary"
+                      aria-label="BoostMySkills on LinkedIn"
+                      className="mt-1 inline-flex"
                     >
-                      {link.label}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={images.linkedin} alt="LinkedIn" className="h-6 w-6" />
                     </a>
-                  ) : (
-                    <Link
-                      href={link.href}
-                      className="text-sm text-muted transition-colors hover:text-primary"
-                    >
-                      {link.label}
-                    </Link>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+                  </li>
+                ) : null}
+              </ul>
+            </div>
+          );
+        })}
       </Container>
 
       <div className="border-t border-line">

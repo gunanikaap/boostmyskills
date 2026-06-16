@@ -56,7 +56,7 @@ export const primaryNav: { label: string; children: { label: string; href: strin
 
 export const footerColumns = [
   {
-    heading: "Legal",
+    heading: "",
     links: [
       { label: "Self-Assessment", href: externalLinks.selfAssessment, external: true },
       { label: "Privacy Policy", href: "/privacy" },

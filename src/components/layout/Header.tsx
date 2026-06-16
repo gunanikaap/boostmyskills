@@ -11,11 +11,11 @@ export default function Header() {
   const [catalogueOpen, setCatalogueOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-white/90 backdrop-blur">
-      <Container className="flex h-16 items-center justify-between gap-4">
+    <header className="border-b border-line bg-white">
+      <Container className="flex h-20 items-center justify-between gap-4">
         <Link href="/" className="flex items-center" aria-label="BoostMySkills home page">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={images.logo} alt="BoostMySkills" className="h-9 w-auto" />
+          <img src={images.logo} alt="BoostMySkills" className="h-14 w-auto" />
         </Link>
 
         {/* Desktop navigation */}
@@ -38,7 +38,7 @@ export default function Header() {
               </svg>
             </button>
             {catalogueOpen ? (
-              <div className="absolute left-0 top-full w-60 rounded-2xl border border-line bg-white p-2 shadow-card">
+              <div className="absolute left-0 top-full w-60 rounded-xl border border-line bg-white p-2 shadow-lg">
                 {primaryNav.children.map((item) => (
                   <Link
                     key={item.href}
@@ -54,10 +54,10 @@ export default function Header() {
           </div>
 
           <div className="ml-2 flex items-center gap-3">
-            <Button href={externalLinks.register} variant="outline" external>
+            <Button href={externalLinks.register} variant="primary" external>
               Register for free
             </Button>
-            <Button href={externalLinks.login} variant="primary" external>
+            <Button href={externalLinks.login} variant="light" external>
               Sign in
             </Button>
           </div>
@@ -99,10 +99,10 @@ export default function Header() {
               </Link>
             ))}
             <div className="mt-3 flex flex-col gap-2">
-              <Button href={externalLinks.register} variant="outline" external>
+              <Button href={externalLinks.register} variant="primary" external>
                 Register for free
               </Button>
-              <Button href={externalLinks.login} variant="primary" external>
+              <Button href={externalLinks.login} variant="light" external>
                 Sign in
               </Button>
             </div>
