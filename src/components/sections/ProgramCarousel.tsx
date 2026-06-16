@@ -30,9 +30,9 @@ export default function ProgramCarousel({ programs }: { programs: Program[] }) {
           <div
             key={program.slug}
             data-card
-            className="w-[88%] shrink-0 snap-start sm:w-[460px]"
+            className="w-[88%] shrink-0 snap-start sm:w-[500px]"
           >
-            <ProgramCard program={program} />
+            <ProgramCard program={program} variant="home" />
           </div>
         ))}
       </div>
@@ -42,7 +42,7 @@ export default function ProgramCarousel({ programs }: { programs: Program[] }) {
         type="button"
         onClick={() => scrollBy(-1)}
         aria-label="Previous micro-programmes"
-        className="absolute -left-5 top-1/2 hidden h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full bg-primary text-white opacity-90 transition hover:opacity-100 lg:flex"
+        className="absolute left-0 top-1/2 hidden h-16 w-16 -translate-y-1/2 items-center justify-center rounded-full bg-primary text-white opacity-90 transition hover:opacity-100 lg:flex"
       >
         <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -52,7 +52,7 @@ export default function ProgramCarousel({ programs }: { programs: Program[] }) {
         type="button"
         onClick={() => scrollBy(1)}
         aria-label="Next micro-programmes"
-        className="absolute -right-5 top-1/2 hidden h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full bg-primary text-white opacity-90 transition hover:opacity-100 lg:flex"
+        className="absolute right-0 top-1/2 hidden h-16 w-16 -translate-y-1/2 items-center justify-center rounded-full bg-primary text-white opacity-90 transition hover:opacity-100 lg:flex"
       >
         <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

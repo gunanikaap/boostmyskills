@@ -9,17 +9,21 @@ import { images, primaryNav, externalLinks } from "@/data/site";
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [catalogueOpen, setCatalogueOpen] = useState(false);
+  const registerButtonClass =
+    "!border-primary !bg-white !px-12 !py-2 !text-base !font-bold !leading-[30px] !text-ink hover:!border-primary hover:!bg-white hover:!text-ink";
+  const signInButtonClass =
+    "!border !border-primary !bg-primary !px-12 !py-2 !text-base !font-bold !leading-[30px] !text-white hover:!border-primary hover:!bg-primary hover:!text-white";
 
   return (
-    <header className="border-b border-line bg-white">
-      <Container className="flex h-20 items-center justify-between gap-4">
+    <header className="bg-white pb-2.5 pt-4">
+      <Container className="flex items-center justify-between gap-6">
         <Link href="/" className="flex items-center" aria-label="BoostMySkills home page">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={images.logo} alt="BoostMySkills" className="h-14 w-auto" />
+          <img src={images.logo} alt="BoostMySkills" className="h-14 w-[122px] object-contain" />
         </Link>
 
-        {/* Desktop navigation — live layout: Catalogue on the left, CTAs far right. */}
-        <nav className="hidden flex-1 items-center justify-between md:flex" aria-label="Primary">
+        {/* Desktop navigation - live layout: Catalogue on the left, CTAs far right. */}
+        <nav className="hidden h-14 flex-1 items-center justify-between md:flex" aria-label="Primary">
           <div
             className="relative"
             onMouseEnter={() => setCatalogueOpen(true)}
@@ -27,7 +31,7 @@ export default function Header() {
           >
             <button
               type="button"
-              className="flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold text-ink transition-colors hover:text-primary"
+              className="flex items-center gap-1 px-4 py-0 text-base font-semibold leading-none text-ink transition-colors hover:text-ink"
               aria-expanded={catalogueOpen}
               aria-haspopup="true"
               onClick={() => setCatalogueOpen((o) => !o)}
@@ -53,11 +57,21 @@ export default function Header() {
             ) : null}
           </div>
 
-          <div className="flex items-center gap-3">
-            <Button href={externalLinks.register} variant="primary" external>
+          <div className="flex items-center gap-6 self-end">
+            <Button
+              href={externalLinks.register}
+              variant="light"
+              className={registerButtonClass}
+              external
+            >
               Register for free
             </Button>
-            <Button href={externalLinks.login} variant="light" external>
+            <Button
+              href={externalLinks.login}
+              variant="primary"
+              className={signInButtonClass}
+              external
+            >
               Sign in
             </Button>
           </div>
@@ -99,10 +113,20 @@ export default function Header() {
               </Link>
             ))}
             <div className="mt-3 flex flex-col gap-2">
-              <Button href={externalLinks.register} variant="primary" external>
+              <Button
+                href={externalLinks.register}
+                variant="light"
+                className={`${registerButtonClass} w-full`}
+                external
+              >
                 Register for free
               </Button>
-              <Button href={externalLinks.login} variant="light" external>
+              <Button
+                href={externalLinks.login}
+                variant="primary"
+                className={`${signInButtonClass} w-full`}
+                external
+              >
                 Sign in
               </Button>
             </div>

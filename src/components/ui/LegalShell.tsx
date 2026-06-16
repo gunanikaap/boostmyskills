@@ -1,5 +1,4 @@
 import Container from "@/components/layout/Container";
-import PageHeader from "@/components/ui/PageHeader";
 import type { LegalDocument, LegalBlock } from "@/data/legal";
 
 function Block({ block }: { block: LegalBlock }) {
@@ -24,14 +23,21 @@ function Block({ block }: { block: LegalBlock }) {
 export default function LegalShell({ document }: { document: LegalDocument }) {
   return (
     <>
-      <PageHeader title={document.title} />
-      <section className="py-12 lg:py-16">
-        <Container className="max-w-4xl space-y-8 text-lg leading-relaxed text-muted">
+      <section className="bg-white pt-9 lg:pt-10">
+        <Container className="!max-w-[1120px] lg:!px-0">
+          <h1 className="text-4xl font-bold leading-tight text-black sm:text-5xl lg:mb-[3.75rem] lg:text-[4.375rem] lg:leading-[5.25rem]">
+            {document.title}
+          </h1>
+        </Container>
+      </section>
+      <section className="pb-28 pt-10">
+        <Container className="!max-w-[1120px] lg:!px-0 space-y-12 text-[1.25rem] leading-[1.8rem] text-muted">
           {document.sections.map((section, index) => (
             <div key={section.heading ?? `section-${index}`} className="space-y-4">
               {section.heading ? (
-                // Live ".r4c-privacy-subtitle": brand green, large.
-                <h2 className="text-2xl font-semibold text-primary sm:text-3xl">{section.heading}</h2>
+                <h2 className="mb-7 mt-12 text-[2.5rem] font-normal leading-[2.5rem] text-primary">
+                  {section.heading}
+                </h2>
               ) : null}
               {section.blocks.map((block, i) => (
                 <Block key={i} block={block} />

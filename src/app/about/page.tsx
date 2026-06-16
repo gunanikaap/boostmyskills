@@ -13,8 +13,8 @@ export default function AboutPage() {
   return (
     <>
       <PageHeader title="About us" />
-      <section className="py-12 lg:py-16">
-        <Container className="max-w-4xl space-y-6 text-lg leading-relaxed text-muted">
+      <section className="pb-28 pt-0">
+        <Container className="!max-w-[1120px] lg:!px-0 space-y-6 text-[1.25rem] leading-[1.8rem] text-muted">
           {aboutParagraphs.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}

@@ -4,27 +4,27 @@ import { images, FUNDING_BLURB } from "@/data/site";
 
 export default function Certificates() {
   return (
-    <section className="py-16 lg:py-24">
-      <Container className="grid items-center gap-12 lg:grid-cols-2">
-        <div>
+    <section className="mx-auto mt-24 w-[90%] max-w-container">
+      <Container className="grid items-center gap-12 !px-0 lg:grid-cols-[1fr_0.8fr] lg:justify-between">
+        <div className="flex h-full flex-col justify-between">
           <Eyebrow>Earn BoostMySkills</Eyebrow>
-          <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-heading text-ink sm:text-4xl">
+          <h2 className="mt-3 max-w-xl text-[2.2rem] font-semibold leading-tight text-ink">
             Micro-credential and Micro-programme Certificates
           </h2>
-          <p className="mt-4 max-w-md text-lg leading-relaxed text-muted2">
+          <p className="mt-6 max-w-[29rem] text-[1.2rem] leading-8 text-muted2">
             Develop and advance your expertise with our comprehensive micro-credential and
             micro-programme courses. Gain practical knowledge and skills to drive energy
             innovations and decarbonisation strategies.
           </p>
-          <div className="mt-6 flex items-center gap-3">
+          <div className="mt-6 flex items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={images.certified} alt="" className="h-12 w-12 shrink-0" />
-            <p className="text-lg font-medium leading-relaxed text-ink">{FUNDING_BLURB}</p>
+            <p className="ml-3 text-2xl font-medium leading-relaxed text-ink">{FUNDING_BLURB}</p>
           </div>
         </div>
-        <div className="flex justify-center">
+        <div className="grid place-content-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={images.diploma} alt="Example certificate" className="w-full max-w-lg" />
+          <img src={images.diploma} alt="Example certificate" className="mt-8 w-full max-w-xl" />
         </div>
       </Container>
     </section>

@@ -1,150 +1,95 @@
-# UI Difference Report — exact-match pass (`exact-ui-match-v3`)
+# UI Difference Report - final public UI match pass
 
-Reference: live **https://boostmyskills.eu/** (custom Open edX `res4city-theme`).
-Method: forensic reading of the live HTML + theme CSS saved under
-[`reference/`](reference/). All measurements below are the live CSS values.
+Reference: https://boostmyskills.eu/
 
-> **Screenshot note:** automated screenshots at 1440 / 768 / 390 px could not be
-> captured — this environment has no headless browser and the system drive is
-> full. Comparison was therefore driven by the live CSS values (the authoritative
-> source for exact spacing/sizes/colours) rather than pixel diffing. The
-> `reference/*-screenshots/` folders are placeholders for manual capture.
+Method: compared the local branch against the live public HTML, computed browser
+styles, and public `res4city-theme` CSS files served by the live site. The goal
+for this pass was visual accuracy, with typography first, then spacing and
+component details.
 
-## Design tokens confirmed from live CSS
-| Token | Live value | Where |
-|---|---|---|
-| Brand green | `#079845` | buttons, eyebrows, links, circles |
-| Ink | `#1A1A1A` | headings / primary text |
-| Muted | `#767676`, `#716D6B` | body / card detail text |
-| Borders | `#EEEEEE` (cards), `#D2D2D2` (panels), `#BDBDBD` (course search/facets) |
-| Tints | `#EAF3E7` (card image panel), `#F6F7F9`, `#F9F9F9` (facets), `#D5E7D0` (circles) |
-| Font | **Urbanist** | global |
-| Container | `max-width: 1440px` | page width |
-| Button radius | `2.7rem` (pill) | `.btn`, `.landing-explore-btn` |
-| Card radius | `1.5rem` | `.card` |
+## Typography fixes made
 
----
+- Confirmed the live site uses `Urbanist` globally via Google Fonts with weights
+  400, 500, 600, and 700.
+- Matched header navigation to live `16px / 600`.
+- Matched header CTAs to live `16px / 700`, 47px height, green outline/solid
+  styles.
+- Matched hero heading to live `64px / 700 / 64px`.
+- Matched hero body copy to live `24px / 400 / 30.4px`, `#767676`.
+- Corrected hero eyebrow from 700 to live 600.
+- Corrected home trending heading to live `64px / 600 / 40px` with `-1.16px`
+  letter spacing.
+- Split programme-card typography:
+  - Home carousel cards use live smaller title text, `19.2px / 600 / 25.6px`.
+  - `/programs` cards use live larger title text, `24.96px / 600 / 28.8px`.
+  - Programme meta/body text uses live `16px / 600 / 22.4px`, `#767676`.
+- Matched `/programs` page header to live catalogue style:
+  `Catalogue` at `24px / 600`, title at `64px / 600 / 40px`.
+- Preserved About/legal page title style at live `70px / 700 / 84px`.
+- Matched contact heading, paragraph, form label, and submit button typography
+  against the live contact page.
 
-## Section-by-section
+## Page-by-page fixes made
 
-### Header
-- **Live:** white, non-sticky, `padding-top:1rem`; logo `122×56`; `.nav-links`
-  `display:flex; justify-content:space-between; flex:1`; Catalogue dropdown left,
-  Register + Sign in right (`padding:.5rem 3rem; font-weight:700`).
-- **Fixed:** non-sticky white header, logo `h-14`, Register = green CTA / Sign in
-  = secondary, **nav now `flex-1 justify-between`** so Catalogue sits left and CTAs
-  far right (was grouped together).
-- **Remaining:** live mobile menu is a slide panel from the hamburger; ours is a
-  simple expanding panel (same links, simpler animation).
+### Home
 
-### Hero
-- **Live:** `.landing-subtitle` green `1.5rem` bold; `.landing-title` `#1A1A1A`,
-  `4rem`/`line-height:4rem` desktop (`2.2rem` mobile); `.landing-content-text`
-  `#767676` `1.5rem`; two `.landing-explore-btn` solid green pills (`radius 2.7rem`,
-  `padding 1rem 1.5rem`) with forward-arrow icons; image right (`~532px`).
-- **Fixed:** green text eyebrow (no pill), large title, muted lead, **two solid
-  green arrow buttons**, white background, image right.
-- **Remaining:** title tops out at Tailwind `text-6xl` (3.75rem) vs `4rem` — ~4%
-  smaller; visually equivalent.
+- Preserved the previously matched header and hero structure.
+- Tightened hero eyebrow weight.
+- Matched trending section heading line-height and letter spacing.
+- Adjusted home programme cards to the live carousel typography rather than the
+  larger `/programs` card typography.
+- Kept certificate, choose option, steps, benefits, testimonials, partners, and
+  footer in the live-style spacing/layout from the prior pass.
+- Tightened footer vertical padding to better match the live footer height.
 
-### Programme cards (`.card` / `.r4c-micro-programs`)
-- **Live:** border `1px #EEEEEE`, radius `1.5rem`, no shadow; `.image_wrapper`
-  background `#EAF3E7`, height `17.5rem` desktop; `.card_header` `1.2rem`→`1.56rem`
-  weight 600; `.card_detail_list_item` `•` bullets, `1rem`, weight 600, `#767676`;
-  green pill **Enrol** + arrow.
-- **Fixed:** border-only card, light-green image panel (`h-56 sm:h-72`), responsive
-  title, disc bullets at `1rem`/`#767676`, green Enrol + arrow.
-- **Remaining:** live cards also show a secondary **"More info"** link to a
-  programme detail page — omitted intentionally (no public detail route to point
-  at; would be a dead link).
+### /programs
 
-### Trending carousel
-- **Live:** `.card_carousel` horizontal scroll + `.carousel-btn` round green
-  (`#079845`, `4rem`) prev/next buttons shown ≥800px.
-- **Fixed:** scroll-snap carousel with **round green prev/next arrows** on desktop
-  (`ProgramCarousel`).
+- Corrected the page header from generic content-page typography to live
+  catalogue-page typography.
+- Kept live-style card grid: centred `auto-fit` cards with 500px max width and
+  2rem gaps.
+- Kept card image height, border, radius, bullets, and Enrol CTA aligned with
+  live measurements.
 
-### Certificates (`.energy_technology`)
-- **Live:** eyebrow "Earn BoostMySkills"; `h2` black `2.2rem`(→`5rem` xl); text
-  `#716D6B 1.2rem`; inline certified badge (icon + `1.5rem` text); diploma image
-  right.
-- **Fixed:** matches (eyebrow, heading, inline badge, image right). **Remaining:**
-  xl heading not scaled to the full `5rem`.
+### /courses
 
-### Choose your option (`.options_section`)
-- **Live:** centred; `h2` weight 800; two cards border `.2rem`; first card
-  `border-color:#079845`; centred icon/title/text; green "View all" pill.
-- **Fixed:** centred, first card green border, green View all. Matches.
+- Reworked the desktop layout to match live: course cards on the left, search
+  and refine panel in the narrow right column.
+- Matched search input height, radius, border colour, font size, and green
+  submit button.
+- Matched "Refine Your Search" typography and the live facet panel style.
+- Moved the MVP limitation note below the result grid so it does not dominate
+  the live-style public view.
+- Kept course data derived from the local MVP source; no LMS/API simulation was
+  added.
 
-### Get started (`.steps_section`)
-- **Live:** eyebrow "How to get started?"; two-column; number in `#D5E7D0` circle,
-  green digit; "First/Second/Third Step" + live copy; **no image**.
-- **Fixed:** matches (copy, circles, two columns, no image).
+### /about
 
-### Benefits (`.benefits_section`)
-- **Live:** image-left (iPad), 2-column benefits, icon-over-text, live copy.
-- **Fixed:** matches.
+- Restored the exact live desktop title position: 72px left, 120px top.
+- Kept the page simple: title plus text, no invented cards or sections.
 
-### Testimonials (`.testimonial_section`)
-- **Live:** left heading; cards border `1.6px #D2D2D2` radius `.8rem`; avatar in
-  `#D5E7D0` circle; `''…''` quotes; horizontal scroll.
-- **Fixed:** matches (left heading, bordered cards, avatar circle, curly quotes).
+### /contact
 
-### Partners (`.partner_section`)
-- **Live:** left `h3` "Our Partners"; partners image full width; extra-partners
-  image below.
-- **Fixed:** matches.
+- Matched the live heading text, including the curly apostrophe.
+- Kept left column heading/paragraph/follow block aligned with live.
+- Adjusted form top spacing so Name, Email, Message, and Submit sit within a few
+  pixels of the live positions.
+- Matched submit button typography and letter spacing.
 
-### Footer
-- **Live:** logo; link list (no heading): Self-Assessment, Privacy, Cookie, Terms;
-  "Our projects": RES4CITY/SHERLOCK/COSS; "Get in touch": Contact Us, About us,
-  LinkedIn; links `1.2rem` weight 600 `#1A1A1A`.
-- **Fixed:** matches (no "Legal" heading; LinkedIn in Get in touch).
+### Legal pages
 
-### Programmes page (`/programs`)
-- **Live:** eyebrow "Catalogue"; `.section_header` `2.5rem`→`4rem`; `.r4c-micro-programs`
-  **CSS grid** `repeat(auto-fit, minmax(250px,500px))`, centred, `2rem` gap.
-- **Fixed:** grid switched to `repeat(auto-fit, minmax(280px,500px))` centred,
-  `2rem` gap (was a fixed 3-col grid).
+- Kept legal text unchanged.
+- Fixed shared shell width so title/content align to the live 1120px content
+  column.
+- Kept readable typography, green section headings, and matching header/footer.
 
-### Courses page (`/courses`)
-- **Live:** `.r4c-discovery-input` white, border `#BDBDBD`, radius `10px`, `42px`
-  high + green `.r4c-discovery-submit` (right-rounded `10px`); `.r4c-search-facets`
-  `#F9F9F9` panel, border `#BDBDBD`, radius `10px`, "Refine Your Search"; course
-  grid `repeat(auto-fit, minmax(362px,1fr))`. Results load from the Open edX
-  course-discovery API (with a "Loading" spinner).
-- **Fixed:** search box → `10px` radius + `#BDBDBD` border + green submit; facets
-  panel → `#F9F9F9`/`#BDBDBD`/`10px`. Functional search + refine retained.
-- **Remaining (intentional):** no course-discovery API, so the list is **MVP-derived**
-  from programme data (clearly labelled). Live course cards include a course image
-  + org/code + "More info"; our derived cards are text-only (no per-course images
-  in the source data). No live "Loading" spinner (no async fetch).
+## Remaining minor differences
 
-### About page (`/about`)
-- **Live:** `.r4c-about-title` black `3rem`/`4.375rem`; three `.r4c-about-content`
-  paragraphs `#767676`. No cards.
-- **Fixed:** matches (title + three verbatim paragraphs, no cards).
-
-### Contact page (`/contact`)
-- **Live:** `.r4c-contact-header` "Let's get in touch!" up to `4.6rem`; text
-  `1.5rem`; "Follow us" + LinkedIn; First/Last name row, Email, Message; green
-  submit `.r4c-contact-form-btn` (radius `2.5rem`) + arrow.
-- **Fixed:** matches (heading, text, Follow us + LinkedIn, First/Last + Email +
-  Message, green Submit + arrow). Uses existing `/api/contact` validation.
-
-### Legal pages (`/privacy`, `/cookie_policy`, `/tos`)
-- **Live:** `.r4c-privacy-title` black `3rem`; `.r4c-privacy-subtitle` **green**
-  `2.5rem`; content `#767676 1.1rem`. Same header/footer.
-- **Fixed:** green section subtitles, large black title, shared header/footer.
-  Content is verbatim from the live pages.
-
----
-
-## Why remaining differences exist
-- **No course-discovery API / per-course images** → `/courses` uses a labelled
-  MVP-derived list rather than live results.
-- **No LMS/auth/enrolment** by design → Register / Sign in / Enrol / "More info"
-  stay as external links (or are omitted where there's no public target).
-- **Tailwind scale** approximates a few exact rem values (e.g. hero title 3.75rem
-  vs 4rem); proportions match, exact px may differ slightly.
-- **No headless browser** in this environment → final pixel verification is manual.
+- `/courses` still uses MVP-derived local course data instead of the live Open
+  edX course-discovery API and live per-course imagery.
+- Live course cards include LMS-specific presentation and "More info" behaviour;
+  local cards remain a visual/static public approximation with external Enrol.
+- The local implementation uses Next.js/Tailwind components, so class names and
+  DOM structure differ from the Open edX theme even when computed sizes match.
+- A few footer and long-page heights differ slightly because local content is not
+  the exact live LMS-rendered content.

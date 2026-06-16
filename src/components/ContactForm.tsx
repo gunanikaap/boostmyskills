@@ -60,15 +60,15 @@ export default function ContactForm() {
     );
   }
 
-  const labelClass = "mb-2 block text-lg font-bold text-muted";
+  const labelClass = "mb-4 block text-xl font-bold text-muted";
   const fieldClass =
-    "w-full rounded-lg border border-line-strong bg-white px-4 py-3 text-base text-ink outline-none transition-colors focus:border-primary";
+    "w-full rounded-[3px] border border-[#c8c8c8] bg-white px-3 py-[5px] text-base font-light leading-[1.6] text-[#222] outline-none transition-colors focus:border-primary";
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+    <form onSubmit={handleSubmit} className="space-y-6 lg:pt-[62px]" noValidate>
       <div>
         <span className={labelClass}>Name</span>
-        <div className="flex flex-col gap-4 sm:flex-row">
+        <div className="flex flex-col gap-4 sm:flex-row sm:gap-[1.6rem]">
           <input
             id="first_name"
             name="first_name"
@@ -115,7 +115,7 @@ export default function ContactForm() {
           rows={5}
           required
           placeholder="Your Message"
-          className={fieldClass}
+          className={`${fieldClass} h-[7.2rem] resize-none`}
         />
       </div>
 
@@ -124,9 +124,9 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3.5 text-lg font-semibold text-white transition-colors hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60"
+        className="!mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-lg font-normal tracking-[1px] text-white transition-colors hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {status === "submitting" ? "Sending…" : "Submit"}
+        {status === "submitting" ? "Sending..." : "Submit"}
         <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>

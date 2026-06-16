@@ -24,27 +24,27 @@ const options = [
 
 export default function ChooseOption() {
   return (
-    <section className="py-16 lg:py-24">
-      <Container>
+    <section className="mx-auto mt-24 w-[90%] max-w-container">
+      <Container className="!px-0">
         <SectionHeading
           eyebrow="Expand your Knowledge with Specialised Learning Paths"
           title="Choose your option"
           description="Choose a micro-programme, where each micro-programme consists of 10 micro-credentials. Or choose one or more individual micro-credentials."
           align="center"
         />
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
+        <div className="mt-12 grid gap-8 md:grid-cols-2">
           {options.map((option) => (
             <div
               key={option.title}
-              className={`flex flex-col items-center rounded-[1.3rem] border-2 p-8 text-center ${
+              className={`flex flex-col items-center rounded-[1.3rem] border-[0.2rem] p-8 text-center ${
                 option.highlight ? "border-primary" : "border-line-strong"
               }`}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={option.icon} alt="" className="h-14 w-14" />
-              <h3 className="mt-6 text-2xl font-semibold text-ink">{option.title}</h3>
-              <p className="mt-4 text-base leading-relaxed text-muted">{option.description}</p>
-              <Button href={option.href} variant="primary" className="mt-6">
+              <h3 className="mt-6 text-[2rem] font-semibold leading-[3.5rem] text-ink">{option.title}</h3>
+              <p className="mt-2 text-center text-[1.1rem] leading-relaxed text-muted">{option.description}</p>
+              <Button href={option.href} variant="primary" className="mt-7 !px-8 !py-2 !text-[1.1rem] !font-bold !leading-[2.2rem]">
                 View all
               </Button>
             </div>

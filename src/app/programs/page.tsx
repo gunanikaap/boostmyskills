@@ -16,14 +16,13 @@ export default function ProgramsPage() {
       <PageHeader
         eyebrow="Catalogue"
         title="Micro-programmes"
-        description="Each micro-programme bundles ten micro-credentials into a structured path. Enrol for free and learn at your own pace."
       />
-      <section className="py-14 lg:py-20">
-        <Container>
+      <section className="mx-auto mt-12 w-[95%] max-w-container pb-28">
+        <Container className="!px-0">
           {/* Live .r4c-micro-programs: grid auto-fit, minmax(250px, 500px), centred, 2rem gap. */}
           <div
             className="grid justify-center gap-8"
-            style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 500px))" }}
+            style={{ gridTemplateColumns: "repeat(auto-fit, minmax(250px, 500px))" }}
           >
             {programs.map((program) => (
               <ProgramCard key={program.slug} program={program} />
