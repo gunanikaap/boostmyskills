@@ -11,13 +11,16 @@ export default function PageHeader({
   title: string;
   description?: ReactNode;
 }) {
+  // Live content/legal pages place a large black title directly on white.
   return (
-    <section className="bg-surface">
-      <Container className="py-14 lg:py-20">
+    <section className="bg-white pt-12 lg:pt-16">
+      <Container>
         {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
-        <h1 className="mt-3 text-4xl font-bold leading-tight text-ink sm:text-5xl">{title}</h1>
+        <h1 className="mt-3 text-4xl font-bold leading-tight text-ink sm:text-5xl lg:text-6xl">
+          {title}
+        </h1>
         {description ? (
-          <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">{description}</p>
+          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">{description}</p>
         ) : null}
       </Container>
     </section>

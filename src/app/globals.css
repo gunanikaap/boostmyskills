@@ -11,9 +11,9 @@ html {
 }
 
 body {
-  /* Swap this stack for the live site's font (e.g. Poppins via next/font) once confirmed. */
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+  /* Urbanist matches the live RES4CITY theme; loaded via next/font in layout.tsx. */
+  font-family: var(--font-urbanist), "Urbanist", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   @apply bg-white text-ink antialiased;
 }
 

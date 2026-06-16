@@ -53,32 +53,44 @@ export default function CourseCatalogue() {
 
   return (
     <div className="space-y-8">
-      {/* Search */}
-      <div>
+      {/* Search — mirrors the live course-discovery search box + submit button. */}
+      <form
+        role="search"
+        aria-label="Search for a course"
+        onSubmit={(e) => e.preventDefault()}
+        className="flex max-w-2xl items-stretch gap-0 overflow-hidden rounded-full border border-line-strong bg-white"
+      >
         <label htmlFor="course-search" className="sr-only">
           Search for a course
         </label>
-        <div className="relative">
-          <svg
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
+        <input
+          id="course-search"
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search for a course"
+          className="w-full bg-transparent px-5 py-3.5 text-base text-ink placeholder:text-muted focus:outline-none"
+        />
+        <button
+          type="submit"
+          title="Search"
+          aria-label="Search"
+          className="flex items-center justify-center bg-primary px-6 text-white transition-colors hover:bg-primary-dark"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="2" />
             <path d="M21 21l-4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
-          <input
-            id="course-search"
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search for a course"
-            className="w-full rounded-full border border-line bg-white py-3 pl-12 pr-4 text-base text-ink shadow-sm placeholder:text-muted focus:border-primary focus:outline-none"
-          />
-        </div>
-      </div>
+        </button>
+      </form>
+
+      {/* MVP transparency: the live catalogue is served by the Open edX course-
+          discovery API; this rebuild filters a list derived from programme data. */}
+      <p className="max-w-2xl rounded-xl border border-line bg-surface px-4 py-3 text-sm text-muted">
+        <span className="font-semibold text-ink">MVP note:</span> these micro-credentials are
+        derived from the published micro-programmes. The official course-discovery catalogue lives
+        in the Open edX backend and would replace this list once its API/data is available.
+      </p>
 
       <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
         {/* Refine Your Search */}

@@ -3,7 +3,7 @@ import type { Course } from "@/data/courses";
 
 export default function CourseCard({ course }: { course: Course }) {
   return (
-    <article className="flex h-full flex-col justify-between rounded-card border border-line bg-white p-6 shadow-card">
+    <article className="flex h-full flex-col justify-between rounded-card border border-line bg-white p-6">
       <div>
         <div className="flex flex-wrap gap-2">
           {course.projects.map((project) => (

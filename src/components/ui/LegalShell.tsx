@@ -25,12 +25,13 @@ export default function LegalShell({ document }: { document: LegalDocument }) {
   return (
     <>
       <PageHeader title={document.title} />
-      <section className="py-14 lg:py-20">
-        <Container className="max-w-3xl space-y-8 text-base leading-relaxed text-muted">
+      <section className="py-12 lg:py-16">
+        <Container className="max-w-4xl space-y-8 text-lg leading-relaxed text-muted">
           {document.sections.map((section, index) => (
             <div key={section.heading ?? `section-${index}`} className="space-y-4">
               {section.heading ? (
-                <h2 className="text-xl font-bold text-ink">{section.heading}</h2>
+                // Live ".r4c-privacy-subtitle": brand green, large.
+                <h2 className="text-2xl font-semibold text-primary sm:text-3xl">{section.heading}</h2>
               ) : null}
               {section.blocks.map((block, i) => (
                 <Block key={i} block={block} />

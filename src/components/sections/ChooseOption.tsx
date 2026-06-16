@@ -1,6 +1,6 @@
-import Link from "next/link";
 import Container from "@/components/layout/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
+import Button from "@/components/ui/Button";
 import { images } from "@/data/site";
 
 const options = [
@@ -8,15 +8,17 @@ const options = [
     icon: images.optionMicroProgrammes,
     title: "Micro-programmes",
     description:
-      "Deepen your expertise with our comprehensive micro-programmes, each made up of ten micro-credentials covering a wide range of topics in renewable energy.",
+      "Deepen your expertise with our comprehensive micro-programmes designed to cover a wide range of topics in renewable energy",
     href: "/programs",
+    highlight: true,
   },
   {
     icon: images.optionMicroCredentials,
     title: "Micro-credentials",
     description:
-      "Boost your skill set with our targeted micro-credentials. These concise courses are ideal for enhancing specific competencies.",
+      "Boost your skill set with our targeted micro-credentials. These concise courses are ideal for those looking to enhance specific competencies",
     href: "/courses",
+    highlight: false,
   },
 ];
 
@@ -25,28 +27,26 @@ export default function ChooseOption() {
     <section className="py-16 lg:py-24">
       <Container>
         <SectionHeading
-          eyebrow="Expand your knowledge with specialised learning paths"
+          eyebrow="Expand your Knowledge with Specialised Learning Paths"
           title="Choose your option"
-          description="Choose a micro-programme, where each consists of ten micro-credentials, or pick one or more individual micro-credentials."
+          description="Choose a micro-programme, where each micro-programme consists of 10 micro-credentials. Or choose one or more individual micro-credentials."
           align="center"
         />
         <div className="mt-12 grid gap-6 md:grid-cols-2">
           {options.map((option) => (
             <div
               key={option.title}
-              className="rounded-card border border-line bg-white p-8 shadow-card"
+              className={`flex flex-col items-center rounded-[1.3rem] border-2 p-8 text-center ${
+                option.highlight ? "border-primary" : "border-line-strong"
+              }`}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={option.icon} alt="" className="h-12 w-12" />
-              <h3 className="mt-5 text-xl font-bold text-ink">{option.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted">{option.description}</p>
-              <Link
-                href={option.href}
-                className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary-dark"
-              >
+              <img src={option.icon} alt="" className="h-14 w-14" />
+              <h3 className="mt-6 text-2xl font-semibold text-ink">{option.title}</h3>
+              <p className="mt-4 text-base leading-relaxed text-muted">{option.description}</p>
+              <Button href={option.href} variant="primary" className="mt-6">
                 View all
-                <span aria-hidden="true">&rarr;</span>
-              </Link>
+              </Button>
             </div>
           ))}
         </div>

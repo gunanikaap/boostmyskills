@@ -1,36 +1,44 @@
 import type { Metadata } from "next";
 import Container from "@/components/layout/Container";
-import PageHeader from "@/components/ui/PageHeader";
 import ContactForm from "@/components/ContactForm";
+import { externalLinks } from "@/data/site";
 
 export const metadata: Metadata = {
   title: "Contact | BoostMySkills",
-  description: "Get in touch with the BoostMySkills team.",
+  description: "Contact us if you have questions about BoostMySkills.",
 };
 
 export default function ContactPage() {
   return (
-    <>
-      <PageHeader
-        eyebrow="Get in touch"
-        title="Let's get in touch!"
-        description="Contact us if you have questions about BoostMySkills."
-      />
-      <section className="py-14 lg:py-20">
-        <Container className="grid gap-12 lg:grid-cols-2">
-          <div className="space-y-6 text-base leading-relaxed text-muted">
-            <p>
-              We&apos;d love to hear from you. Fill in the form and a member of the team will be in
-              touch.
-            </p>
-            <div className="rounded-card border border-line bg-surface p-6">
-              <p className="text-sm font-semibold text-ink">Email</p>
-              <p className="mt-1 text-sm text-muted">info@boostmyskills.eu</p>
+    <section className="py-12 lg:py-20">
+      <Container className="grid gap-12 lg:grid-cols-2 lg:gap-16">
+        <div>
+          <h1 className="text-4xl font-bold leading-tight text-ink sm:text-5xl lg:text-6xl">
+            Let&apos;s get in touch!
+          </h1>
+          <p className="mt-6 max-w-md text-xl leading-relaxed text-ink">
+            Contact us if you have questions about BoostMySkills.
+          </p>
+          <div className="mt-12">
+            <p className="text-xl text-ink">Follow us</p>
+            <div className="mt-4 flex">
+              <a
+                href={externalLinks.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="BoostMySkills on LinkedIn"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line transition-colors hover:border-primary"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/images/linkedin.png" alt="" className="h-5 w-5" />
+              </a>
             </div>
           </div>
+        </div>
+        <div className="lg:self-end">
           <ContactForm />
-        </Container>
-      </section>
-    </>
+        </div>
+      </Container>
+    </section>
   );
 }

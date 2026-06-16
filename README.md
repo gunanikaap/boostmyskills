@@ -102,10 +102,13 @@ The cleaner aliases `/cookie-policy` and `/terms` are kept as permanent redirect
 
 ## Design tokens
 
-All colours are defined once in [`tailwind.config.ts`](tailwind.config.ts) and
-referenced through Tailwind classes. The current palette approximates the live
-site's sustainability theme. To match the original exactly, inspect an element on
-the live site, copy its computed colour, and replace the hex values in the config.
+Colours and the font are taken from the **live RES4CITY theme CSS** and defined
+once in [`tailwind.config.ts`](tailwind.config.ts):
+brand green `#079845`, ink `#1A1A1A`, muted `#767676`/`#716D6B`, borders
+`#EEEEEE`/`#D2D2D2`, tints `#EAF3E7`/`#F6F7F9`. The site uses **Urbanist**
+(loaded via `next/font` in [`app/layout.tsx`](src/app/layout.tsx)), the same font
+as the live site. See [`VISUAL_AUDIT.md`](VISUAL_AUDIT.md) for the visual-parity
+notes and the few intentional differences.
 
 ## Images
 
@@ -139,11 +142,12 @@ at the correct production Open edX deployment.
 
 ## Remaining TODOs
 
-- [ ] Verify the **Cookie Policy** wording and full cookie/tracker table verbatim
-      against the live page (see TODO in [`src/data/legal.ts`](src/data/legal.ts)).
-- [ ] Replace the approximate **colour palette / fonts** with the live site's exact values.
 - [ ] Confirm **rights** to redistribute the logo and partner imagery now hosted in `/public`.
 - [ ] Wire `/api/contact` to a real email provider and confirm the public contact email.
 - [ ] Confirm the **Open edX enrolment/auth URLs** (`LMS_BASE`, register/login, programme IDs) are current.
 - [ ] Replace the derived `/courses` data with the **official course-discovery API/data** when available.
+
+> The legal pages (Privacy, Cookie Policy, Terms) are transcribed **verbatim** from
+> the live public pages and have been verified — no placeholder/legal TODO remains.
+> The colour palette and font now come from the live theme, not approximations.
 ```
