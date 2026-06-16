@@ -20,7 +20,11 @@ export default function ProgramsPage() {
       />
       <section className="py-14 lg:py-20">
         <Container>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Live .r4c-micro-programs: grid auto-fit, minmax(250px, 500px), centred, 2rem gap. */}
+          <div
+            className="grid justify-center gap-8"
+            style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 500px))" }}
+          >
             {programs.map((program) => (
               <ProgramCard key={program.slug} program={program} />
             ))}

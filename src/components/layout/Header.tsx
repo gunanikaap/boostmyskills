@@ -18,8 +18,8 @@ export default function Header() {
           <img src={images.logo} alt="BoostMySkills" className="h-14 w-auto" />
         </Link>
 
-        {/* Desktop navigation */}
-        <nav className="hidden items-center gap-2 md:flex" aria-label="Primary">
+        {/* Desktop navigation — live layout: Catalogue on the left, CTAs far right. */}
+        <nav className="hidden flex-1 items-center justify-between md:flex" aria-label="Primary">
           <div
             className="relative"
             onMouseEnter={() => setCatalogueOpen(true)}
@@ -53,7 +53,7 @@ export default function Header() {
             ) : null}
           </div>
 
-          <div className="ml-2 flex items-center gap-3">
+          <div className="flex items-center gap-3">
             <Button href={externalLinks.register} variant="primary" external>
               Register for free
             </Button>

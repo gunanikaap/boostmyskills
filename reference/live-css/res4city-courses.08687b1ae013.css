@@ -1,0 +1,304 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+
+.find-courses {
+    background: none;
+    width: 95%;
+    margin: auto;
+}
+
+.card {
+    max-width: 500px;
+    flex: 0 0 40%;
+    border-radius: 1.5rem;
+    margin-bottom: 2rem;
+    border: none !important;
+    box-shadow: 0px 4px 4px 4px #D9D9D91A !important;
+    border-radius: 2rem !important;
+}
+
+.image_wrapper {
+    background-color: #EAF3E7;
+    z-index: -2;
+    border-top-right-radius: 1.5rem;
+    border-top-left-radius: 1.5rem;
+    height: 20rem;
+    overflow: hidden;
+    width: 100%;
+}
+
+.courses-listing-item {
+    max-height: none !important;
+}
+
+.rc4-course-title {
+    font-family: 'Urbanist';
+    color: #000000 !important;
+    font-weight: 600 !important;
+    margin-top: 2rem !important;
+    height: auto !important;
+    padding: 0 !important;
+    font-size: 1.4rem !important;
+    height: 3rem !important;
+}
+
+.rc4-course-info {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    height: auto !important;
+}
+
+.r4c-img {
+    /* border: 1px solid red; */
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+    min-width: 100%;
+
+}
+
+.rc4-course-info {
+    .course-organization {
+        padding: 0 !important;
+        margin-top: 2rem;
+        color: #000000 !important;
+        font-family: 'Urbanist';
+        font-size: 1.1rem !important;
+        line-height: 1.4rem !important;
+        margin-bottom: 0.7rem;
+    }
+
+    .course-code {
+        padding: 0 !important;
+        color: #000000 !important;
+        font-family: 'Urbanist';
+        font-size: 1.1rem !important;
+        line-height: 1.4rem !important;
+    }
+}
+
+.course-desc {
+    color: #000000;
+    font-family: 'Urbanist';
+    font-size: 1.1rem !important;
+    line-height: 1.4rem !important;
+}
+
+.r4c-arrow {
+    margin-left: 0.3rem;
+    width: 1.3rem;
+}
+
+.r4c-moreinfo {
+    font-size: 1    rem !important;
+    font-weight: 700 !important;
+    font-family: 'Urbanist' !important;
+    cursor: pointer;
+    color: #000000 !important;
+    display: flex !important;
+}
+
+.rc4-btn {
+    border: 1px;
+    border-radius: 2.7rem;
+    padding: 7.5px 30px;
+    background: rgba(7, 152, 69, 1);
+    color: white;
+    display: flex;
+    font-family: 'Urbanist';
+    font-weight: 500;
+    line-height: 1.3;
+    align-items: center;
+    font-size: 0.95rem;
+    outline: none !important;
+    border-bottom: none;
+    text-shadow: 0 0 0 !important;
+    height: 3.2rem;
+
+    .btn-text {
+        margin-right: 0.5rem;
+    }
+
+    .course-arrow {
+        max-width: 1.9rem;
+        width: 1.3rem;
+        padding-bottom: 2px;
+    }
+}
+
+.more-info {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    margin-top: 3.5rem;
+    padding-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+
+}
+
+
+.r4c-courses-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(362px, 1fr));
+    justify-content: center;
+    gap: 2rem;
+}
+
+.r4c-course-item {
+    width: 100% !important;
+}
+
+.courses-listing-item {
+    width: 100% !important;
+}
+.courses-listing-item > .card{
+    width: 100%;
+    margin: auto !important;
+}
+@media screen and (max-width:550px) {
+    
+    .find-courses .courses-container .courses:not(.no-course-discovery), .university-profile .courses-container .courses:not(.no-course-discovery) {
+    
+        width: 100%;
+    }
+}
+
+.rc4-course-date {
+    display: none;
+}
+
+.r4c-learn-more {
+    display: none;
+}
+
+.find-courses .r4c-discovery-input {
+    background: #FFFFFF;
+    border: 1px solid #BDBDBD;
+    border-radius: 10px;    
+    height: 42px;     
+}
+
+.find-courses .r4c-discovery-submit {
+    background: rgba(7, 152, 69, 1);   
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    height: 42px;     
+}
+
+.find-courses .r4c-search-facets {
+    background: #FFFFFF;
+    border: 1px solid #BDBDBD;
+    border-radius: 10px;
+    background-color: rgb(249, 249, 249, 1);
+}
+
+.find-courses .search-facets .toggle button {
+    color: rgba(7, 152, 69, 1);   
+}
+
+.find-courses .search-facets .facet-option:hover, .find-courses .search-facets .facet-option:focus {
+    background: rgba(7, 152, 69, 1);   
+}
+
+.find-courses .search-facets .facet-option {
+    display: flex;
+    text-wrap: wrap;
+    align-items: center;
+}
+
+.sidebar-dropdown {
+    margin-bottom: 30px;
+}
+
+.sidebar-dropdown label{
+    font-family: inherit;
+}
+
+/* Styling the select */
+.dropbtn {
+    height: fit-content;
+    width: 100%;
+    padding: 14px;
+    font-size: 20px;
+    width: 100%;
+    border-radius: 8px;
+    border: none;
+    border: 1px solid #b5b5b5;
+    background: white !important;
+    appearance: none;
+    /* Remove default dropdown appearance */
+    transition: border-color 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    box-shadow: none !important;
+}
+
+.dropbtn:focus, .dropbtn:hover {    
+    border-color: #000;
+    background-image: unset !important;
+    background-color: transparent !important;
+}
+
+/* Floating label styles */
+.dropbtn-label {
+    background-color: rgb(249, 249, 249, 1);
+    position: absolute;
+    left: 5px;
+    pointer-events: none;
+    padding: 0 5px;
+    top: -14px;
+    font-size: 14px;
+    font-style: normal;
+    color: #4caf50;
+}
+
+.dropbtn-selection{
+    pointer-events: none;
+    font-size: 20px;
+    font-style: normal;
+    color: #252525;
+    padding: 0 5px;
+}
+
+img.dropdown-arrow,
+.close-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 13px;
+    transition: 0.3s ease all;
+}
+
+.sidebar-dropdown .dropbtn ~ .dropdown-content {
+    display: none;
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #b5b5b5;
+    padding: 10px;
+    list-style-type: none;
+    margin-top: 4px;
+    font-size: 16px;
+}
+
+.dropdown-content li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.dropdown-content li:hover {
+    background-color: #07984517;
+}
+
+
+
+@keyframes slideDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+

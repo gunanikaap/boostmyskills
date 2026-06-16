@@ -19,25 +19,30 @@ export default function ProgramCard({
 }) {
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-card border border-line bg-white">
+      {/* Live: .image_wrapper — light-green panel, ~17.5rem tall on desktop. */}
       <div className="bg-surface-alt">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={program.image}
           alt={program.title}
           loading="lazy"
-          className="h-48 w-full object-cover"
+          className="h-56 w-full object-cover sm:h-72"
         />
       </div>
       <div className="flex flex-1 flex-col px-7 py-7">
-        <h3 className="text-xl font-semibold leading-snug text-ink">{program.title}</h3>
+        {/* Live: .card_header — 1.2rem, up to ~1.56rem on desktop, weight 600. */}
+        <h3 className="text-lg font-semibold leading-snug text-ink sm:text-2xl">{program.title}</h3>
 
         {showCredentials ? (
           <div className="mt-5 flex-1">
-            <p className="text-ink">
+            <p className="font-semibold text-muted">
               {program.code} | {program.project}
             </p>
-            <p className="mt-3 text-ink">Includes the following micro-credentials:</p>
-            <ul className="mt-2 list-disc space-y-1 pl-5 marker:text-muted">
+            <p className="mt-3 font-semibold text-muted">
+              Includes the following micro-credentials:
+            </p>
+            {/* Live: .card_detail_list_item — • bullets, 1rem, weight 600, #767676. */}
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-base marker:text-muted">
               {program.microCredentials.map((credential) => (
                 <li key={credential} className="font-semibold text-muted">
                   {credential}
@@ -46,7 +51,7 @@ export default function ProgramCard({
             </ul>
           </div>
         ) : (
-          <p className="mt-3 text-ink">
+          <p className="mt-3 font-semibold text-muted">
             {program.code} | {program.project}
           </p>
         )}

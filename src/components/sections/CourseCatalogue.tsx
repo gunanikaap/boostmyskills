@@ -58,7 +58,7 @@ export default function CourseCatalogue() {
         role="search"
         aria-label="Search for a course"
         onSubmit={(e) => e.preventDefault()}
-        className="flex max-w-2xl items-stretch gap-0 overflow-hidden rounded-full border border-line-strong bg-white"
+        className="flex max-w-2xl items-stretch overflow-hidden rounded-[10px] border border-line-mid bg-white"
       >
         <label htmlFor="course-search" className="sr-only">
           Search for a course
@@ -69,7 +69,7 @@ export default function CourseCatalogue() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search for a course"
-          className="w-full bg-transparent px-5 py-3.5 text-base text-ink placeholder:text-muted focus:outline-none"
+          className="h-[46px] w-full bg-transparent px-4 text-base text-ink placeholder:text-muted focus:outline-none"
         />
         <button
           type="submit"
@@ -93,10 +93,10 @@ export default function CourseCatalogue() {
       </p>
 
       <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
-        {/* Refine Your Search */}
-        <aside className="h-fit rounded-card border border-line bg-surface p-6">
+        {/* Refine Your Search — live .r4c-search-facets: #F9F9F9 panel, #BDBDBD border, 10px radius. */}
+        <aside className="h-fit rounded-[10px] border border-line-mid bg-surface-muted p-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-base font-bold text-ink">Refine Your Search</h2>
+            <h2 className="text-lg font-bold text-ink">Refine Your Search</h2>
             {hasFilters ? (
               <button
                 type="button"

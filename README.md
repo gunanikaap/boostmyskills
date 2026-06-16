@@ -107,8 +107,19 @@ once in [`tailwind.config.ts`](tailwind.config.ts):
 brand green `#079845`, ink `#1A1A1A`, muted `#767676`/`#716D6B`, borders
 `#EEEEEE`/`#D2D2D2`, tints `#EAF3E7`/`#F6F7F9`. The site uses **Urbanist**
 (loaded via `next/font` in [`app/layout.tsx`](src/app/layout.tsx)), the same font
-as the live site. See [`VISUAL_AUDIT.md`](VISUAL_AUDIT.md) for the visual-parity
-notes and the few intentional differences.
+as the live site.
+
+This was taken further in an **exact-UI-matching pass**: the live theme CSS was
+captured under [`reference/`](reference/) and used to align header layout, hero,
+programme cards, the trending carousel (with arrow controls), the `/programs`
+grid, and the `/courses` search/refine styling to the live measurements. See
+[`UI_DIFF_REPORT.md`](UI_DIFF_REPORT.md) for the section-by-section comparison and
+[`VISUAL_AUDIT.md`](VISUAL_AUDIT.md) for the earlier parity notes.
+
+**Honest limitations:** the site is **not** matched pixel-for-pixel — a few exact
+rem values are approximated by Tailwind's scale, `/courses` uses an MVP-derived
+list (no Open edX course-discovery API or per-course images), and LMS/auth/enrolment
+remain external links by design.
 
 ## Images
 
