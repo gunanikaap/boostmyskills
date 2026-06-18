@@ -103,6 +103,10 @@ the `/login` / `/register` UI stays unchanged.
   the fetch (or wire a live API call) to refresh. One platform "test" course is
   excluded, so the count is 76. The **Micro-Programme facet filtering** is
   best-effort (the discovery API doesn't expose programme membership per course).
+- **Contact form validates but does not deliver.** `POST /api/contact`
+  type-checks the input and returns clear status codes (`422` invalid, `200` ok),
+  but does **not** send an email yet — plug in a provider at the marked
+  integration point in [`src/app/api/contact/route.ts`](src/app/api/contact/route.ts).
 - **Enrolment remains external** (Open edX).
 - **Auth is independent of Open edX.** With Supabase configured, accounts created
   here live in *your* Supabase project, separate from Open edX accounts, until an

@@ -34,8 +34,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Please enter a valid email address." }, { status: 422 });
   }
 
-  // TODO: deliver the message — e.g. send an email or forward to a CRM/helpdesk.
-  // await sendEmail({ name, email, message });
+  // Integration point: this route validates the message but does not deliver it.
+  // Plug a transactional email provider (Resend / SendGrid / SMTP) here, e.g.
+  //   await sendEmail({ name, email, message });
+  // See README "Known limitations" — wiring this up is left to the university.
 
   return NextResponse.json({ ok: true }, { status: 200 });
 }

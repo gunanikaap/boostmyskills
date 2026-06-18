@@ -18,6 +18,3 @@ export function getAuthProvider(): AuthProvider {
   if (isSupabaseConfigured) return supabaseProvider;
   return demoProvider;
 }
-
-/** True when a real auth backend is wired up. */
-export const isAuthBackendConfigured = isSupabaseConfigured;
