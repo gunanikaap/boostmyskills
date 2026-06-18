@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AuthShell from "@/components/auth/AuthShell";
-import AuthDemoForm from "@/components/auth/AuthDemoForm";
+import AuthForm from "@/components/auth/AuthForm";
 
 export const metadata: Metadata = {
   title: "Sign in | BoostMySkills",
   description:
-    "Demo sign-in screen for the BoostMySkills rebuild. Real authentication is handled by the existing Open edX backend.",
+    "Sign in to BoostMySkills. Uses Supabase auth when configured, otherwise a demo screen.",
 };
 
 export default function LoginPage() {
   return (
     <AuthShell active="login">
-      <AuthDemoForm
+      <AuthForm
+        action="login"
         submitLabel="Sign in"
         fields={[
           {

@@ -10,8 +10,8 @@ import { images } from "@/data/site";
  * Rendered as a fixed full-screen overlay (z above the marketing Header/Footer)
  * so the auth pages feel standalone WITHOUT modifying the shared layout.
  *
- * NOTE: these pages are UI only. Real authentication is handled by the existing
- * Open edX backend (see authMode in src/data/site.ts).
+ * The form does real auth when a backend is configured (see src/lib/auth) and
+ * falls back to a demo notice otherwise.
  */
 export default function AuthShell({
   active,

@@ -34,51 +34,61 @@ the **public website only** and hands off to that backend for everything else.
 | Contact | `/contact` | Contact form → typed `/api/contact` route |
 | Legal | `/privacy`, `/cookie_policy`, `/tos` | Copy transcribed verbatim from live |
 | Legal aliases | `/cookie-policy`, `/terms` | Permanent redirects to the canonical routes |
-| **Demo auth UI** | `/login`, `/register` | **UI only** — does not authenticate (see §3) |
+| **Auth** | `/login`, `/register` | Real Supabase auth when configured; demo notice otherwise (see §3) |
 | Contact API | `/api/contact` | The one dynamic route |
 
 ---
 
 ## 3. Authentication and enrolment
 
-**Production login / registration / enrolment belong to the existing Open edX
-backend.** This rebuild does **not** reimplement them — doing so would fork the
-real source of truth (accounts, enrolment records, certificates).
+This site has its **own free auth** (login + registration + stored users) via
+**Supabase**, with a **clean demo fallback** when no backend is configured. It is
+**provider-agnostic**: the active backend is chosen behind a small interface
+([`src/lib/auth/`](src/lib/auth/)), so Open edX (or any other backend) can be
+added later without touching the UI.
 
-What this rebuild provides instead:
+### How it behaves
 
-- **Demo auth UI** at `/login` and `/register` — a faithful re-creation of the
-  live auth screen (pale-green page, logo, intro heading, white card with
-  Register / Sign in tabs). On submit they show:
-  _"Demo only — production authentication is handled by the existing Open edX
-  backend."_ They **do not** store credentials, create sessions, or call any
-  auth backend.
-- A single config switch in [`src/data/site.ts`](src/data/site.ts):
+- **Real auth — Supabase configured** (see setup below): `/login` and `/register`
+  really sign users in / create accounts. Supabase handles password hashing,
+  sessions and email verification (free tier; **we never store raw passwords**).
+  Extra profile data (full name) lands in a `public.profiles` table.
+- **Demo — nothing configured** (default): the same `/login` / `/register` UI
+  shows a notice on submit and stores nothing. This keeps the repo
+  **clone-and-run with zero setup** and the build green.
 
-  ```ts
-  export const authMode = "demo" as AuthMode;   // "demo" | "external"
-  ```
+The **Header CTA destinations** are a separate switch in
+[`src/data/site.ts`](src/data/site.ts):
 
-  - `"demo"` → Header **Sign in** / **Register for free** link to `/login` and
-    `/register` (the demo UI).
-  - `"external"` → the same CTAs hand off to the existing Open edX
-    login/register URLs (`externalLinks` in the same file). Nothing else needs to
-    change; the Header reads `authLinks`.
+```ts
+export const authMode = "local" as AuthMode;   // "local" | "external"
+```
 
-- **Enrol** buttons remain **external links to Open edX** (they are not faked).
+- `"local"` (default) → **Sign in** / **Register for free** → the in-site
+  `/login` / `/register` pages (which do real auth when Supabase is set).
+- `"external"` → the CTAs hand off to the existing Open edX login/register URLs.
 
-### To connect real authentication
+**Enrol** buttons remain **external links to Open edX** (they are not faked).
 
-The university must provide:
+### Enable real auth (free — no credit card)
 
-1. **Open edX OAuth client credentials** (client id / secret) and **API
-   permissions** for the relevant endpoints.
-2. **Environment variables** for those secrets and the LMS base URL.
-3. **Allowed redirect URLs** registered in Open edX for this site's origin.
-4. **Backend access** to validate the integration end-to-end.
+1. Create a project at <https://supabase.com>.
+2. Open the SQL editor and run [`supabase/schema.sql`](supabase/schema.sql)
+   (creates the `profiles` table + Row Level Security + signup trigger).
+3. Project Settings → API: copy the **Project URL** and the public **anon key**.
+4. Copy [`.env.example`](.env.example) → `.env.local` and paste both values.
+5. Rebuild / restart (`NEXT_PUBLIC_*` vars are read at build time).
+6. (Optional) In Supabase → Authentication, toggle "Confirm email" to taste.
 
-Then either flip `authMode` to `"external"` (simplest — hand off to the existing
-Open edX screens) or replace the demo forms with a real OAuth flow.
+`.env.local` is git-ignored, so secrets never get committed.
+
+### Open edX later (designed-for)
+
+When the university provides Open edX **OAuth credentials + API access**, complete
+the stub adapter in [`src/lib/auth/openedx.ts`](src/lib/auth/openedx.ts) and select
+it in [`src/lib/auth/index.ts`](src/lib/auth/index.ts) — or simply set
+`authMode = "external"` to hand off to the existing Open edX screens. Either way
+the `/login` / `/register` UI stays unchanged.
 
 ---
 
@@ -94,7 +104,10 @@ Open edX screens) or replace the demo forms with a real OAuth flow.
   excluded, so the count is 76. The **Micro-Programme facet filtering** is
   best-effort (the discovery API doesn't expose programme membership per course).
 - **Enrolment remains external** (Open edX).
-- **Demo auth pages do not authenticate** anyone (see §3).
+- **Auth is independent of Open edX.** With Supabase configured, accounts created
+  here live in *your* Supabase project, separate from Open edX accounts, until an
+  Open edX adapter is implemented (designed-for; see §3). Without Supabase keys
+  the auth pages are demo-only and store nothing.
 - **Not pixel-perfect.** Layout, type, and spacing were matched against the live
   theme CSS, but a few exact `rem` values are approximated by Tailwind's scale and
   some per-course artwork differs from live.
@@ -140,16 +153,20 @@ npm run lint     # ESLint
 **Where links / config live**
 
 - `LMS_BASE` and all external/auth URLs: `src/data/site.ts`.
-- **Auth mode** (`demo` ↔ `external`): `authMode` in `src/data/site.ts`.
+- **Auth mode** (`local` ↔ `external`, Header CTA destination): `authMode` in
+  `src/data/site.ts`.
+- **Auth backend** (provider-agnostic): [`src/lib/auth/`](src/lib/auth/) —
+  `index.ts` picks the active provider; `supabase.ts`, `demo.ts`, `openedx.ts`.
+- **Auth secrets:** `.env.local` (template in [`.env.example`](.env.example)).
+- **DB schema:** [`supabase/schema.sql`](supabase/schema.sql).
 - Legal route aliases / redirects: [`next.config.mjs`](next.config.mjs).
 
-**How to replace demo auth with real Open edX integration**
+**How to turn on real auth** — follow §3 "Enable real auth" (create a free
+Supabase project, run the schema, set two env vars, rebuild).
 
-1. Obtain OAuth credentials + API permissions + redirect URLs (see §3).
-2. Easiest path: set `authMode = "external"` so the CTAs hand off to Open edX.
-3. Full native path: replace the forms in
-   [`src/components/auth/AuthDemoForm.tsx`](src/components/auth/AuthDemoForm.tsx)
-   with a real OAuth/login flow and add the secrets as environment variables.
+**How to add Open edX auth later** — implement
+[`src/lib/auth/openedx.ts`](src/lib/auth/openedx.ts) and select it in
+`src/lib/auth/index.ts`, or set `authMode = "external"` (see §3).
 
 **How to refresh the course catalogue**
 
@@ -177,15 +194,19 @@ src/
 │  ├─ programs/ courses/      # catalogues
 │  ├─ about/ contact/         # content pages
 │  ├─ privacy/ cookie_policy/ tos/   # legal pages
-│  ├─ login/ register/        # DEMO auth UI (no real auth)
+│  ├─ login/ register/        # auth UI (real via Supabase, else demo)
 │  ├─ api/contact/route.ts    # typed contact endpoint
 │  └─ globals.css
+├─ middleware.ts              # Supabase session refresh (inert if unconfigured)
+├─ lib/
+│  ├─ auth/                   # provider-agnostic auth (supabase/demo/openedx)
+│  └─ supabase/               # browser + server Supabase clients
 ├─ components/
 │  ├─ layout/                 # Header, Footer, Container
 │  ├─ ui/                     # Button, PageHeader, LegalShell, ...
 │  ├─ sections/               # home sections + CourseCatalogue (search/refine)
 │  ├─ cards/                  # ProgramCard, CourseCard
-│  ├─ auth/                   # AuthShell, AuthDemoForm (demo only)
+│  ├─ auth/                   # AuthShell, AuthForm (calls lib/auth provider)
 │  └─ ContactForm.tsx
 ├─ data/                      # single source of truth for content (see §6)
 └─ lib/types.ts

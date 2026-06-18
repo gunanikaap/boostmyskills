@@ -47,22 +47,20 @@ export const externalLinks = {
 };
 
 /**
- * Production authentication is delegated to the existing Open edX backend.
- * Native integration requires OAuth/API credentials and backend access.
- *
- * authMode controls where the Header "Sign in" / "Register for free" CTAs point:
- *  - "demo"     -> the local demo /login and /register pages (UI only; these do
- *                  NOT authenticate anyone — see those pages).
+ * Where the Header "Sign in" / "Register for free" CTAs point:
+ *  - "local"    -> the in-site /login and /register pages. These do REAL auth
+ *                  when Supabase is configured (see src/lib/auth + .env.example),
+ *                  and fall back to a demo notice otherwise.
  *  - "external" -> the existing Open edX login/register URLs (externalLinks).
  *
- * Switch to "external" once the real backend is wired up. Nothing else needs to
- * change; the Header reads `authLinks` below.
+ * The auth *backend* is chosen separately and provider-agnostically in
+ * src/lib/auth/ (Supabase today; Open edX adapter stubbed for later).
  */
-export type AuthMode = "demo" | "external";
+export type AuthMode = "local" | "external";
 
-// The cast keeps the value switchable: change "demo" to "external" to hand the
+// The cast keeps the value switchable: change "local" to "external" to hand the
 // Header CTAs off to the existing Open edX backend (no other change needed).
-export const authMode = "demo" as AuthMode;
+export const authMode = "local" as AuthMode;
 
 export const authLinks = {
   login: authMode === "external" ? externalLinks.login : "/login",
