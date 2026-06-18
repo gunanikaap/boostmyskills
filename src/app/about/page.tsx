@@ -13,7 +13,8 @@ export default function AboutPage() {
   return (
     <>
       <PageHeader title="About us" />
-      <section className="pb-28 pt-0">
+      {/* Live .r4c-about-title has margin-bottom 3.75rem before the content. */}
+      <section className="pb-28 pt-[3.75rem]">
         <Container className="!max-w-[1120px] lg:!px-0 space-y-6 text-[1.25rem] leading-[1.8rem] text-muted">
           {aboutParagraphs.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>

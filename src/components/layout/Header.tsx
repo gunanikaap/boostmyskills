@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Container from "@/components/layout/Container";
 import Button from "@/components/ui/Button";
-import { images, primaryNav, externalLinks } from "@/data/site";
+import { images, primaryNav, authLinks } from "@/data/site";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -20,7 +20,7 @@ export default function Header() {
         <Container className="flex items-center justify-between gap-6">
           <Link href="/" className="flex items-center" aria-label="BoostMySkills home page">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={images.logo} alt="BoostMySkills" className="h-14 w-[122px] object-contain" />
+            <img src={images.logo} alt="BoostMySkills" className="h-14 w-[122px]" />
           </Link>
 
           {/* Desktop navigation - live layout: Catalogue on the left, CTAs far right. */}
@@ -32,14 +32,14 @@ export default function Header() {
             >
               <button
                 type="button"
-                className="flex items-center gap-1 px-4 py-0 text-base font-semibold leading-none text-ink transition-colors hover:text-ink"
+                className="flex items-center gap-[0.7rem] px-4 py-0 text-base font-semibold leading-none text-ink transition-colors hover:text-ink"
                 aria-expanded={catalogueOpen}
                 aria-haspopup="true"
                 onClick={() => setCatalogueOpen((o) => !o)}
               >
                 {primaryNav.label}
-                <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
-                  <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                <svg width="15" height="15" viewBox="0 0 12 12" aria-hidden="true">
+                  <path d="M2 4.5l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
               {catalogueOpen ? (
@@ -60,18 +60,18 @@ export default function Header() {
 
             <div className="flex items-center gap-6 self-end">
               <Button
-                href={externalLinks.register}
+                href={authLinks.register}
                 variant="light"
                 className={registerButtonClass}
-                external
+                external={authLinks.isExternal}
               >
                 Register for free
               </Button>
               <Button
-                href={externalLinks.login}
+                href={authLinks.login}
                 variant="primary"
                 className={signInButtonClass}
-                external
+                external={authLinks.isExternal}
               >
                 Sign in
               </Button>
@@ -115,18 +115,18 @@ export default function Header() {
               ))}
               <div className="mt-3 flex flex-col gap-2">
                 <Button
-                  href={externalLinks.register}
+                  href={authLinks.register}
                   variant="light"
                   className={`${registerButtonClass} w-full`}
-                  external
+                  external={authLinks.isExternal}
                 >
                   Register for free
                 </Button>
                 <Button
-                  href={externalLinks.login}
+                  href={authLinks.login}
                   variant="primary"
                   className={`${signInButtonClass} w-full`}
-                  external
+                  external={authLinks.isExternal}
                 >
                   Sign in
                 </Button>

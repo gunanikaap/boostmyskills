@@ -60,12 +60,15 @@ export default function ContactForm() {
     );
   }
 
-  const labelClass = "mb-4 block text-xl font-bold text-muted";
+  // Live .r4c-contact-form-label: 1.5rem mobile, 1.25rem desktop, bold, #767676.
+  const labelClass =
+    "mb-4 block text-[1.5rem] font-bold text-muted lg:text-[1.25rem]";
+  // Live inputs: Urbanist 16px / line-height 23.68px / #222; placeholders italic.
   const fieldClass =
-    "w-full rounded-[3px] border border-[#c8c8c8] bg-white px-3 py-[5px] text-base font-light leading-[1.6] text-[#222] outline-none transition-colors focus:border-primary";
+    "w-full rounded-[3px] border border-[#c8c8c8] bg-white px-3 py-2 text-base font-normal leading-[1.48] text-[#222] outline-none transition-colors placeholder:italic focus:border-primary";
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 lg:pt-[62px]" noValidate>
+    <form onSubmit={handleSubmit} className="space-y-6 lg:pt-16" noValidate>
       <div>
         <span className={labelClass}>Name</span>
         <div className="flex flex-col gap-4 sm:flex-row sm:gap-[1.6rem]">
@@ -115,16 +118,23 @@ export default function ContactForm() {
           rows={5}
           required
           placeholder="Your Message"
-          className={`${fieldClass} h-[7.2rem] resize-none`}
+          // Live textarea: height 7.2rem, resize: vertical (expandable).
+          className={`${fieldClass} h-[7.2rem] resize-y`}
         />
       </div>
 
       {status === "error" ? <p className="text-sm text-red-600">{error}</p> : null}
 
+      {/* Live .r4c-contact-form-btn (desktop >=1200px): 1.125rem, padding
+          .625rem 1.25rem, radius 2.5rem, green gradient. */}
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="!mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-lg font-normal tracking-[1px] text-white transition-colors hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60"
+        style={{
+          backgroundImage:
+            "linear-gradient(to bottom, #079845 0%, #006624 50%, #004d15 50%, #005217 100%)",
+        }}
+        className="!mt-8 inline-flex items-center gap-2 rounded-[2.5rem] px-5 py-2.5 text-lg font-normal text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {status === "submitting" ? "Sending..." : "Submit"}
         <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">

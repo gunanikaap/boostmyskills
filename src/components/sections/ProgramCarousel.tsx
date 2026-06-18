@@ -46,7 +46,7 @@ export default function ProgramCarousel({ programs }: { programs: Program[] }) {
           className="pointer-events-auto -ml-10 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-white opacity-90 transition hover:opacity-100"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M19 12H6M11 6l-6 6 6 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
         <button
@@ -56,7 +56,7 @@ export default function ProgramCarousel({ programs }: { programs: Program[] }) {
           className="pointer-events-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary text-white opacity-90 transition hover:opacity-100"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
       </div>

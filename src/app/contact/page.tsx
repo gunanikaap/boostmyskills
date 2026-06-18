@@ -21,7 +21,9 @@ export default function ContactPage() {
           </p>
           <div className="mt-20">
             <p className="text-xl text-black">Follow us</p>
-            <div className="mt-6 flex">
+            {/* Live .r4c-social-icon-container: margin-top 1.5rem, margin-left -.75rem.
+                Pulled a touch closer to "Follow us". */}
+            <div className="-ml-3 mt-4 flex">
               <a
                 href={externalLinks.linkedin}
                 target="_blank"
@@ -29,8 +31,9 @@ export default function ContactPage() {
                 aria-label="BoostMySkills on LinkedIn"
                 className="inline-flex"
               >
+                {/* Live uses the plain "in" mark (no filled square). */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/images/linkedin.png" alt="" className="h-6 w-6" />
+                <img src="/images/linkedin.svg" alt="" className="h-6 w-6" />
               </a>
             </div>
           </div>

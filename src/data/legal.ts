@@ -12,12 +12,12 @@
  */
 
 export interface LegalBlock {
-  type: "paragraph" | "list";
+  type: "paragraph" | "list" | "group";
   /** Optional bold lead-in rendered before `text` (mirrors the live <b> tags). */
   label?: string;
   /** For paragraph blocks. */
   text?: string;
-  /** For list blocks. */
+  /** For list blocks, and for the tight lines of a `group` block. */
   items?: string[];
 }
 
@@ -39,6 +39,13 @@ const labelled = (label: string, text: string): LegalBlock => ({
   text,
 });
 const list = (items: string[]): LegalBlock => ({ type: "list", items });
+// A bold heading + its detail lines rendered tightly together (e.g. the live
+// Cookie Policy entity blocks: name, "Type or Function", "Server", consent).
+const group = (label: string, lines: string[]): LegalBlock => ({
+  type: "group",
+  label,
+  items: lines,
+});
 
 export const privacyPolicy: LegalDocument = {
   title: "Privacy Policy",
@@ -264,18 +271,16 @@ export const cookiePolicy: LegalDocument = {
       heading: "Who uses cookies on this Website?",
       blocks: [
         p("The following entities use the cookies described below for these purposes:"),
-        labelled("BoostMySkills", ""),
-        p("Type or Function: Technical"),
-        p("Server: https://boostmyskills.eu/"),
-        p(
+        group("BoostMySkills", [
+          "Type or Function: Technical",
+          "Server: https://boostmyskills.eu/",
           "These cookies are necessary and therefore are excluded from the duty to obtain the user's consent.",
-        ),
-        labelled("Linkedin", ""),
-        p("Type or Function: External social networks"),
-        p("Server: http://www.linkedin.com"),
-        p(
+        ]),
+        group("Linkedin", [
+          "Type or Function: External social networks",
+          "Server: http://www.linkedin.com",
           "These cookies are not excluded from the duty to obtain consent, so the user must authorize their use.",
-        ),
+        ]),
       ],
     },
     {
@@ -327,7 +332,8 @@ export const cookiePolicy: LegalDocument = {
 };
 
 export const termsAndConditions: LegalDocument = {
-  title: "Terms and Conditions",
+  // Live page H1 reads "Website Terms and Conditions".
+  title: "Website Terms and Conditions",
   sections: [
     {
       heading: "1. Introduction",

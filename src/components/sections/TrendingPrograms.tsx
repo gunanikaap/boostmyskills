@@ -16,6 +16,30 @@ export default function TrendingPrograms() {
         <div className="mt-16">
           <ProgramCarousel programs={programs} />
         </div>
+
+        {/* Live: .link_btn - black, 1.2rem, weight 700, links to /programs. */}
+        <a
+          href="/programs"
+          className="mt-2 inline-flex items-center text-[1.2rem] font-medium text-ink"
+        >
+          View all Micro-programmes
+          <svg
+            width="21"
+            height="18"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            className="ml-2"
+          >
+            <path
+              d="M5 12h13M13 6l6 6-6 6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </a>
       </Container>
     </section>
   );

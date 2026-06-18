@@ -11,7 +11,7 @@ export default function Footer() {
       <footer className="mx-auto mt-[100px] flex w-full max-w-container flex-col px-[1.3rem] py-6 lg:min-h-[208px] lg:flex-row lg:justify-between">
         <div className="mb-8 flex flex-col justify-between lg:mb-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={images.logo} alt="BoostMySkills" className="h-14 w-[122px] object-contain lg:m-0" />
+          <img src={images.logo} alt="BoostMySkills" className="h-14 w-[122px] lg:m-0" />
         </div>
 
         {footerColumns.map((column) => {

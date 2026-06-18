@@ -10,15 +10,10 @@ export const metadata: Metadata = {
 
 export default function CoursesPage() {
   return (
-    <section className="bg-white pb-24 pt-10 lg:pt-[10.5rem]">
+    <section className="bg-white pb-24 pt-8">
       <Container className="max-w-container">
-        {/*
-          NOTE (MVP): the micro-credential list is derived from the programme
-          data in src/data/programs.ts, not from an official course-discovery
-          API. The search box and "Refine Your Search" panel are functional but
-          scoped to that derived data. Wire this page to the real catalogue
-          API/data when it is available. See src/data/courses.ts.
-        */}
+        {/* Course data is the real catalogue from the live Open edX Course API
+            (snapshotted in src/data/courses.ts, images in public/images/courses). */}
         <CourseCatalogue />
       </Container>
     </section>

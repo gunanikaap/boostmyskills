@@ -1,23 +1,6 @@
 import Button from "@/components/ui/Button";
 import type { Program } from "@/lib/types";
 
-// Forward arrow shown beside the live "Enrol" button.
-function ArrowIcon({
-  className = "ml-1",
-  width = 16,
-  height = 16,
-}: {
-  className?: string;
-  width?: number;
-  height?: number;
-}) {
-  return (
-    <svg width={width} height={height} viewBox="0 0 24 24" aria-hidden="true" className={className}>
-      <path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 export default function ProgramCard({
   program,
   showCredentials = true,
@@ -28,22 +11,22 @@ export default function ProgramCard({
   variant?: "home" | "program";
 }) {
   const isHome = variant === "home";
+  // Live card text (home + /programs) is weight 600 / #767676.
+  const bodyWeight = "font-semibold";
   const titleClass = isHome
     ? "px-4 text-[1.2rem] font-semibold leading-[1.6rem] text-[#313131]"
     : "px-4 text-[1.2rem] font-semibold leading-[1.6rem] text-[#313131] sm:text-[1.56rem] sm:leading-[1.8rem]";
-  const detailClass = "text-base font-semibold leading-[1.4rem] text-muted";
+  const detailClass = `text-base ${bodyWeight} leading-[1.4rem] text-muted`;
   const articleClass = isHome
     ? "relative flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-line bg-white"
     : "relative flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-line bg-white pb-24";
   const bodyClass = isHome
     ? "mb-20 flex flex-1 flex-col px-[0.6rem] pb-8 pt-[1.8rem]"
     : "flex flex-1 flex-col px-6 py-7 sm:px-10";
-  const listClass = isHome
-    ? "mt-4 inline-block list-none space-y-0 text-base"
-    : "mt-4 list-disc space-y-0 pl-5 text-base marker:text-muted";
-  const listItemClass = isHome
-    ? "relative pl-5 font-semibold leading-6 text-muted before:absolute before:left-0 before:top-[0.75em] before:h-[5px] before:w-[5px] before:-translate-y-1/2 before:rounded-full before:bg-muted before:content-['']"
-    : "font-semibold leading-6 text-muted";
+  // Live .card_detail_list: list-none, inline-block, custom bullet dot at
+  // padding-left 20px (pl-5), 1rem text, line-height 1.5rem, #767676.
+  const listClass = "mt-4 inline-block list-none space-y-0 text-base";
+  const listItemClass = `relative pl-5 ${bodyWeight} leading-6 text-muted before:absolute before:left-0 before:top-0 before:text-muted before:content-['•']`;
 
   return (
     <article className={articleClass}>
@@ -64,14 +47,16 @@ export default function ProgramCard({
         </h3>
 
         {showCredentials ? (
-          <div className="mt-7 flex-1">
+          // Live .card_detail shares the .card_header inset (px-4) so the
+          // programme code / bullet list line up under the title.
+          <div className="mt-5 flex-1 px-4">
             <p className={detailClass}>
               {program.code} | {program.project}
             </p>
             <p className={`mt-5 ${detailClass}`}>
               Includes the following micro-credentials:
             </p>
-            {/* Live: .card_detail_list_item - custom bullets, 1rem, weight 600, #767676. */}
+            {/* Live: .card_detail_list_item - bullet dot, 1rem, #767676. */}
             <ul className={listClass}>
               {program.microCredentials.map((credential) => (
                 <li
@@ -84,7 +69,7 @@ export default function ProgramCard({
             </ul>
           </div>
         ) : (
-          <p className={`mt-5 ${detailClass}`}>
+          <p className={`mt-5 px-4 ${detailClass}`}>
             {program.code} | {program.project}
           </p>
         )}
@@ -100,19 +85,18 @@ export default function ProgramCard({
               <span className="inline-flex rounded-full bg-primary px-10 py-4 text-[1.1rem] font-semibold leading-[1.3rem] text-white">
                 Enrol
               </span>
-              <ArrowIcon className="ml-2 text-primary" width={21} height={18} />
             </a>
           </div>
         ) : (
-          <div className="absolute bottom-6 left-0 right-0 flex px-6 pt-4 sm:px-10">
+          // Live /programs: plain "Enrol", no arrow, smaller pill, lower-left.
+          <div className="absolute bottom-6 left-0 right-0 flex px-6 pt-4">
             <Button
               href={program.enrolUrl}
               variant="primary"
-              className="!px-10 !py-4 !text-xl !font-semibold !leading-none"
+              className="!px-10 !py-4 !text-[1.1rem] !font-semibold !leading-none"
               external
             >
               Enrol
-              <ArrowIcon />
             </Button>
           </div>
         )}

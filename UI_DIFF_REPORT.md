@@ -85,11 +85,23 @@ component details.
 
 ## Remaining minor differences
 
-- `/courses` still uses MVP-derived local course data instead of the live Open
-  edX course-discovery API and live per-course imagery.
+- `/courses` now uses **real public catalogue data** pulled from the live Open edX
+  course-discovery API (76 courses, real images, org/project/topic/programme
+  facets), snapshotted into the repo. It is not a live feed; the Micro-Programme
+  facet filtering is best-effort (programme membership isn't exposed per course).
 - Live course cards include LMS-specific presentation and "More info" behaviour;
-  local cards remain a visual/static public approximation with external Enrol.
+  local cards link "More info" / "Enrol" to the live course pages.
 - The local implementation uses Next.js/Tailwind components, so class names and
   DOM structure differ from the Open edX theme even when computed sizes match.
 - A few footer and long-page heights differ slightly because local content is not
   the exact live LMS-rendered content.
+
+## Handoff additions — demo auth
+
+- Added UI-only **/login** and **/register** pages re-creating the live auth
+  screen (pale-green page, logo, "Start learning with BoostMySkills" heading,
+  white card with Register / Sign in tabs). They are demo only: on submit they
+  show a notice and do not authenticate, store credentials, or create sessions.
+- Header **Sign in** / **Register for free** destinations are controlled by
+  `authMode` in `src/data/site.ts` (`demo` → local pages, `external` → Open edX).
+  Header visual styling is unchanged. Production auth/enrolment stays with Open edX.
