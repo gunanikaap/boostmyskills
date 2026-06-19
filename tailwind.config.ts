@@ -20,6 +20,7 @@ const config: Config = {
         muted2: "#716D6B",    // alt secondary text (certificate copy)
         line: "#EEEEEE",      // card borders / dividers
         "line-strong": "#D2D2D2", // option / testimonial panel borders
+        "line-mid": "#BDBDBD", // courses search input / facets border (live)
         primary: {
           DEFAULT: "#079845", // brand green (buttons, links, eyebrows)
           dark: "#057A37",    // hover / pressed
@@ -29,6 +30,7 @@ const config: Config = {
           DEFAULT: "#F6F7F9", // tinted section background
           alt: "#EAF3E7",     // light-green panel / card-image background
           green: "#D5E7D0",   // soft green used for number / avatar circles
+          muted: "#F9F9F9",   // courses "Refine Your Search" facet panel (live)
         },
       },
       fontFamily: {

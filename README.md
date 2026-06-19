@@ -1,153 +1,235 @@
 # BoostMySkills — Public Site (Clean Rebuild)
 
-A clean, component-based rebuild of the public-facing [BoostMySkills](https://boostmyskills.eu/)
-marketing site, built with **Next.js (App Router) + TypeScript + Tailwind CSS**.
+A clean, component-based rebuild of the public-facing
+[BoostMySkills](https://boostmyskills.eu/) website, built with
+**Next.js (App Router) + TypeScript + Tailwind CSS**.
 
-## What this rebuild does
+---
 
-- Rebuilds the **public marketing / catalogue layer** of BoostMySkills:
-  Home, Micro-programmes, Micro-credentials, About, Contact, and the legal pages
-  (Privacy, Cookie Policy, Terms).
-- Mirrors the live site's content and public URLs (`/privacy`, `/cookie_policy`, `/tos`).
-- Keeps all content in `src/data` so pages stay declarative and easy to update.
-- Drives all colours from design tokens in `tailwind.config.ts`.
+## 1. Project overview
 
-## What this rebuild intentionally does **not** do
+This is a **handoff-ready rebuild of the BoostMySkills public website** — the
+marketing / catalogue layer that sits in front of the learning platform.
 
-The original BoostMySkills platform runs on **Open edX** (the open-source LMS) for
-authentication, enrolment, course delivery, progress tracking, and certificates.
-This project does **not** reimplement any of that. Specifically, it does not include:
+- **Stack:** Next.js 14 (App Router), TypeScript (strict), Tailwind CSS, ESLint.
+- **Content** lives in `src/data/` so pages stay declarative and easy to edit.
+- **Colours and font** come from the live RES4CITY theme CSS (captured under
+  [`reference/`](reference/)) and are defined once in
+  [`tailwind.config.ts`](tailwind.config.ts).
 
-- User registration / authentication
-- Course enrolment, progress, assessments, or certificates
-- A learner dashboard
+The original BoostMySkills platform runs on **Open edX** for authentication,
+enrolment, course delivery, progress, and certificates. This project rebuilds
+the **public website only** and hands off to that backend for everything else.
 
-### Why LMS / auth / enrolment links are external
+---
 
-Those flows belong to the existing Open edX backend and must stay there — the
-account system, enrolment records, and certificates already live in that system.
-Re-creating them here would fork the source of truth and break real users. So
-**Register**, **Sign in**, and **Enrol** are plain external links that hand off to
-the live backend (configured via `LMS_BASE` in [`src/data/site.ts`](src/data/site.ts)).
+## 2. What is included
 
-## Tech stack
+| Area | Route(s) | Notes |
+| ---- | -------- | ----- |
+| Home | `/` | Hero, trending micro-programmes carousel, sections |
+| Micro-programmes | `/programs` | The 10 programmes, programme cards |
+| Micro-credentials / course catalogue | `/courses` | Real public catalogue data + search / refine facets (see §4) |
+| About | `/about` | Live copy |
+| Contact | `/contact` | Contact form → typed `/api/contact` route |
+| Legal | `/privacy`, `/cookie_policy`, `/tos` | Copy transcribed verbatim from live |
+| Legal aliases | `/cookie-policy`, `/terms` | Permanent redirects to the canonical routes |
+| **Auth** | `/login`, `/register` | Real Supabase auth when configured; demo notice otherwise (see §3) |
+| Contact API | `/api/contact` | The one dynamic route |
 
-- **Next.js 14** (App Router, static rendering for marketing pages)
-- **TypeScript** (strict mode)
-- **Tailwind CSS** with a centralised design-token system
-- **ESLint** (`eslint-config-next`)
-- One typed **API route** (`/api/contact`) for the contact form
+---
 
-## Running locally
+## 3. Authentication and enrolment
+
+This site has its **own free auth** (login + registration + stored users) via
+**Supabase**, with a **clean demo fallback** when no backend is configured. It is
+**provider-agnostic**: the active backend is chosen behind a small interface
+([`src/lib/auth/`](src/lib/auth/)), so Open edX (or any other backend) can be
+added later without touching the UI.
+
+### How it behaves
+
+- **Real auth — Supabase configured** (see setup below): `/login` and `/register`
+  really sign users in / create accounts. Supabase handles password hashing,
+  sessions and email verification (free tier; **we never store raw passwords**).
+  Extra profile data (full name) lands in a `public.profiles` table.
+- **Demo — nothing configured** (default): the same `/login` / `/register` UI
+  shows a notice on submit and stores nothing. This keeps the repo
+  **clone-and-run with zero setup** and the build green.
+
+The **Header CTA destinations** are a separate switch, driven by the
+`NEXT_PUBLIC_AUTH_MODE` environment variable (resolved in
+[`src/data/site.ts`](src/data/site.ts)):
+
+```bash
+# .env.local  — read at build time
+NEXT_PUBLIC_AUTH_MODE=local      # or "demo" / "external"
+```
+
+- `local` / `demo` (**default** when unset) → **Sign in** / **Register for free**
+  → the in-site `/login` / `/register` pages (which do real auth when Supabase
+  is set). This is the safe default for **local development / presentation**.
+- `external` → the CTAs hand off to the existing **Open edX** login/register URLs.
+  **Production deployments that want Open edX auth should set
+  `NEXT_PUBLIC_AUTH_MODE=external`** (before building, since `NEXT_PUBLIC_*` is
+  inlined at build time) so demo links are never shipped by accident.
+
+**Enrol** buttons remain **external links to Open edX** regardless of this
+setting (they are not faked).
+
+### Enable real auth (free — no credit card)
+
+1. Create a project at <https://supabase.com>.
+2. Open the SQL editor and run [`supabase/schema.sql`](supabase/schema.sql)
+   (creates the `profiles` table + Row Level Security + signup trigger).
+3. Project Settings → API: copy the **Project URL** and the public **anon key**.
+4. Copy [`.env.example`](.env.example) → `.env.local` and paste both values.
+5. Rebuild / restart (`NEXT_PUBLIC_*` vars are read at build time).
+6. (Optional) In Supabase → Authentication, toggle "Confirm email" to taste.
+
+`.env.local` is git-ignored, so secrets never get committed.
+
+### Open edX later (designed-for)
+
+When the university provides Open edX **OAuth credentials + API access**, complete
+the stub adapter in [`src/lib/auth/openedx.ts`](src/lib/auth/openedx.ts) and select
+it in [`src/lib/auth/index.ts`](src/lib/auth/index.ts) — or simply set
+`NEXT_PUBLIC_AUTH_MODE=external` to hand off to the existing Open edX screens.
+Either way the `/login` / `/register` UI stays unchanged.
+
+---
+
+## 4. Known limitations
+
+- **`/courses` data is a snapshot.** It is generated from the **live public Open
+  edX course-discovery API** (`/api/courses/v1/courses/` and the discovery search)
+  — 76 real courses with their real images, organisations, projects, topics, and
+  micro-programme facet, snapshotted into [`src/data/courses.ts`](src/data/courses.ts),
+  [`src/data/courseFacets.ts`](src/data/courseFacets.ts) and
+  [`public/images/courses/`](public/images/courses/). It is **not live** — re-run
+  the fetch (or wire a live API call) to refresh. One platform "test" course is
+  excluded, so the count is 76. The **Micro-Programme facet filtering** is
+  best-effort (the discovery API doesn't expose programme membership per course).
+- **Contact form validates but does not deliver.** `POST /api/contact`
+  type-checks the input and returns clear status codes (`422` invalid, `200` ok),
+  but does **not** send or store the message (the `200` response is explicit:
+  `delivered: false`) and the success UI says so. Plug in a provider at the marked
+  integration point in [`src/app/api/contact/route.ts`](src/app/api/contact/route.ts).
+- **Enrolment remains external** (Open edX).
+- **Auth is independent of Open edX.** With Supabase configured, accounts created
+  here live in *your* Supabase project, separate from Open edX accounts, until an
+  Open edX adapter is implemented (designed-for; see §3). Without Supabase keys
+  the auth pages are demo-only and store nothing. **Password reset is not wired
+  up** in this build, so the login screen states that honestly rather than
+  offering a non-working link.
+- **Not pixel-perfect.** Layout, type, and spacing were matched against the live
+  theme CSS, but a few exact `rem` values are approximated by Tailwind's scale and
+  some per-course artwork differs from live.
+- **Open dependency advisories.** `npm audit --omit=dev` reports Next.js / bundled
+  PostCSS vulnerabilities whose only fix is a breaking major upgrade
+  (Next 14 → 16). This was **not** applied in the handoff build (it needs an
+  async-API migration and re-test); see [`SECURITY_NOTES.md`](SECURITY_NOTES.md)
+  for the finding, the decision, and the recommended upgrade path for deployment.
+
+---
+
+## 5. Local setup
 
 ```bash
 npm install      # install dependencies
-npm run dev      # start the dev server at http://localhost:3000
+npm run dev      # dev server at http://localhost:3000
 npm run build    # production build
 npm run start    # serve the production build
-npm run lint     # run ESLint
+npm run lint     # ESLint
 ```
 
-> **Windows / low-disk note:** if your system drive (`C:`) is low on space, Next.js
-> and npm may fail with `ENOSPC` while writing caches/temp files. Point them at a
-> drive with free space before building, e.g. (PowerShell):
+> **Windows / low-disk note:** if your system drive (`C:`) is low on space,
+> Next.js/npm may fail with `ENOSPC` while writing caches/temp. Point them at a
+> drive with space first (PowerShell):
 > ```powershell
-> $env:TEMP="D:\boostmyskills\.tmp"; $env:TMP=$env:TEMP
-> $env:npm_config_cache="D:\boostmyskills\.npm-cache"
+> $env:TEMP="D:\boostmyskills.tmp"; $env:TMP=$env:TEMP
+> $env:npm_config_cache="D:\boostmyskills.npm-cache"
 > $env:NEXT_TELEMETRY_DISABLED="1"
 > npm run build
 > ```
+
+---
+
+## 6. Handoff notes for university developers
+
+**Where content lives** — `src/data/`:
+
+| File | Content |
+| ---- | ------- |
+| `site.ts` | external links, image assets, nav, **`authMode` / `authLinks`**, `LMS_BASE` |
+| `programs.ts` | the 10 micro-programmes (+ Enrol URLs) |
+| `courses.ts` | course catalogue snapshot (from the public Open edX API) |
+| `courseFacets.ts` | course facet options + counts (Project / Organisation / Topic / Micro-Programme) |
+| `about.ts` | About-page copy |
+| `legal.ts` | Privacy / Cookie / Terms copy (verbatim from live) |
+| `home.ts` | steps, benefits, testimonials |
+
+**Where links / config live**
+
+- `LMS_BASE` and all external/auth URLs: `src/data/site.ts`.
+- **Auth mode** (`local`/`demo` ↔ `external`, Header CTA destination): set the
+  `NEXT_PUBLIC_AUTH_MODE` env var; resolved by `authMode` in `src/data/site.ts`.
+- **Auth backend** (provider-agnostic): [`src/lib/auth/`](src/lib/auth/) —
+  `index.ts` picks the active provider; `supabase.ts`, `demo.ts`, `openedx.ts`.
+- **Auth secrets:** `.env.local` (template in [`.env.example`](.env.example)).
+- **DB schema:** [`supabase/schema.sql`](supabase/schema.sql).
+- Legal route aliases / redirects: [`next.config.mjs`](next.config.mjs).
+
+**How to turn on real auth** — follow §3 "Enable real auth" (create a free
+Supabase project, run the schema, set two env vars, rebuild).
+
+**How to add Open edX auth later** — implement
+[`src/lib/auth/openedx.ts`](src/lib/auth/openedx.ts) and select it in
+`src/lib/auth/index.ts`, or set `NEXT_PUBLIC_AUTH_MODE=external` (see §3).
+
+**How to refresh the course catalogue**
+
+Re-fetch from the public Open edX course-discovery API and regenerate
+`src/data/courses.ts`, `src/data/courseFacets.ts`, and `public/images/courses/`
+(keep the same `Course` / facet shapes so the UI works unchanged).
+
+**How to deploy**
+
+Builds to mostly static output; deploys cleanly to Vercel / Netlify / any Node
+host. The only dynamic route is `/api/contact` — wire it to a real email provider
+and confirm the public contact address. Confirm `LMS_BASE` points at the correct
+production Open edX deployment before publishing, and confirm **rights to
+redistribute the logo and partner imagery** now hosted under `public/`.
+
+---
 
 ## Project structure
 
 ```
 src/
-├─ app/                       # routes (App Router)
+├─ app/
 │  ├─ layout.tsx              # shared shell: header + footer + skip link
-│  ├─ page.tsx               # home page (composes the sections below)
-│  ├─ programs/              # micro-programmes catalogue
-│  ├─ courses/               # micro-credentials catalogue (search + refine)
-│  ├─ about/  contact/       # content pages
-│  ├─ privacy/ cookie_policy/ tos/   # legal pages (live copy)
-│  ├─ api/contact/route.ts   # typed contact endpoint
+│  ├─ page.tsx                # home page
+│  ├─ programs/ courses/      # catalogues
+│  ├─ about/ contact/         # content pages
+│  ├─ privacy/ cookie_policy/ tos/   # legal pages
+│  ├─ login/ register/        # auth UI (real via Supabase, else demo)
+│  ├─ api/contact/route.ts    # typed contact endpoint
 │  └─ globals.css
+├─ middleware.ts              # Supabase session refresh (inert if unconfigured)
+├─ lib/
+│  ├─ auth/                   # provider-agnostic auth (supabase/demo/openedx)
+│  └─ supabase/               # browser + server Supabase clients
 ├─ components/
-│  ├─ layout/                # Header, Footer, Container
-│  ├─ ui/                    # Button, SectionHeading, Eyebrow, PageHeader, LegalShell, ...
-│  ├─ sections/              # home sections + CourseCatalogue (client search/refine)
-│  ├─ cards/                 # ProgramCard, CourseCard
+│  ├─ layout/                 # Header, Footer, Container
+│  ├─ ui/                     # Button, PageHeader, LegalShell, ...
+│  ├─ sections/               # home sections + CourseCatalogue (search/refine)
+│  ├─ cards/                  # ProgramCard, CourseCard
+│  ├─ auth/                   # AuthShell, AuthForm (calls lib/auth provider)
 │  └─ ContactForm.tsx
-├─ data/                     # single source of truth for content
-│  ├─ site.ts                # links, local image assets, navigation
-│  ├─ programs.ts            # the 10 micro-programmes
-│  ├─ courses.ts             # micro-credentials (derived from programmes — see MVP note)
-│  ├─ about.ts               # About-page copy (from live site)
-│  ├─ legal.ts               # Privacy / Cookie / Terms copy (from live site)
-│  └─ home.ts                # steps, benefits, testimonials
-└─ lib/types.ts              # shared TypeScript types
+├─ data/                      # single source of truth for content (see §6)
+└─ lib/types.ts
 ```
 
-## Routes
-
-Canonical legal routes match the live site exactly:
-
-| Route            | Page                  |
-| ---------------- | --------------------- |
-| `/privacy`       | Privacy Policy        |
-| `/cookie_policy` | Cookie Policy         |
-| `/tos`           | Terms and Conditions  |
-
-The cleaner aliases `/cookie-policy` and `/terms` are kept as permanent redirects
-(see [`next.config.mjs`](next.config.mjs)) so no inbound link 404s.
-
-## Design tokens
-
-Colours and the font are taken from the **live RES4CITY theme CSS** and defined
-once in [`tailwind.config.ts`](tailwind.config.ts):
-brand green `#079845`, ink `#1A1A1A`, muted `#767676`/`#716D6B`, borders
-`#EEEEEE`/`#D2D2D2`, tints `#EAF3E7`/`#F6F7F9`. The site uses **Urbanist**
-(loaded via `next/font` in [`app/layout.tsx`](src/app/layout.tsx)), the same font
-as the live site. See [`VISUAL_AUDIT.md`](VISUAL_AUDIT.md) for the visual-parity
-notes and the few intentional differences.
-
-## Images
-
-All images are **hosted locally** in [`public/images`](public/images) (downloaded
-from the original RES4CITY theme) and referenced via `asset()` in `src/data/site.ts`.
-Programme covers live under `public/images/programs`.
-
-> Confirm you have the rights to redistribute the **logo** and **partner imagery**
-> before publishing.
-
-## Known MVP limitation — `/courses`
-
-The live `/courses` page is a searchable course catalogue backed by Open edX's
-course-discovery service. This rebuild does **not** have that API, so the
-micro-credential list is **derived from the programme data** in
-[`src/data/programs.ts`](src/data/programs.ts) (each programme's micro-credentials,
-de-duplicated). The **"Search for a course"** box and **"Refine Your Search"**
-panel are fully functional, but they filter only this derived dataset.
-
-When the official course-discovery API/data is provided, replace the derivation in
-`src/data/courses.ts` with the real data while keeping the same `Course` shape, and
-the search/refine UI in `src/components/sections/CourseCatalogue.tsx` will keep
-working unchanged.
-
-## Deployment
-
-The site builds to mostly static output and deploys cleanly to Vercel, Netlify, or
-any Node host. On Vercel, import the repo and accept the defaults — the one dynamic
-route is the `/api/contact` endpoint. Ensure `LMS_BASE` in `src/data/site.ts` points
-at the correct production Open edX deployment.
-
-## Remaining TODOs
-
-- [ ] Confirm **rights** to redistribute the logo and partner imagery now hosted in `/public`.
-- [ ] Wire `/api/contact` to a real email provider and confirm the public contact email.
-- [ ] Confirm the **Open edX enrolment/auth URLs** (`LMS_BASE`, register/login, programme IDs) are current.
-- [ ] Replace the derived `/courses` data with the **official course-discovery API/data** when available.
-
-> The legal pages (Privacy, Cookie Policy, Terms) are transcribed **verbatim** from
-> the live public pages and have been verified — no placeholder/legal TODO remains.
-> The colour palette and font now come from the live theme, not approximations.
-```
+See [`UI_DIFF_REPORT.md`](UI_DIFF_REPORT.md) for the section-by-section visual
+comparison and known visual limitations.

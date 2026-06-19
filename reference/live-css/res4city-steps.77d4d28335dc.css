@@ -1,0 +1,86 @@
+﻿.steps_section {
+    margin-top: 4rem;
+}
+
+.steps_section_header {
+    font-weight: 600;
+    font-size: 3rem;
+    max-width: 100%;
+    margin-bottom: 1.7rem;
+}
+
+.steps_text {
+    font-size: 1.2rem;
+    margin-bottom: 1.4rem;
+    line-height: 1.8rem;
+
+}
+.steps_list{
+    padding: 0 !important;
+}
+
+.step_list_item {
+    display: flex;
+    margin-bottom: 2rem;
+}
+
+.step_number {
+    margin-right: 2.4rem;
+    color: #079845;
+    font-size: 1.2rem;
+    line-height: 4.2rem;
+    background-color: #D5E7D080;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 1.1rem;
+    border-radius: 100%;
+    display: grid;
+    place-content: center;
+}
+
+.step_header {
+    font-weight: 500;
+    font-size: 1.3rem;
+    line-height: 2.4rem;
+    font-family: 'Urbanist', sans-serif !important;
+    margin-bottom: 1rem;
+}
+
+.step_text {
+    font-size: 1.2rem;
+    line-height: 1.8rem;
+    font-weight: 400;
+}
+
+h4.steps_section_header {
+    color: black;
+    font-size: 2.2rem;
+    font-weight: 600;
+    font-family: 'Urbanist', sans-serif !important;
+}
+
+.steps_container {
+    width: 90%;
+    margin: auto;
+    max-width: 1440px;
+    margin-top: 4rem;
+}
+
+
+@media screen and (min-width: 1200px) {
+    .steps_section {
+        display: flex;
+        justify-content: space-between;
+        margin: 6rem auto;
+    }
+
+    .steps_box {
+        margin-left: 4rem;
+    }
+
+
+    .steps_section_header {
+        margin-bottom: 3rem;
+    }
+}
+

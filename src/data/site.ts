@@ -46,6 +46,40 @@ export const externalLinks = {
   linkedin: "https://www.linkedin.com/company/res4city/posts/?feedView=all",
 };
 
+/**
+ * Where the Header "Sign in" / "Register for free" CTAs point:
+ *  - "local"    -> the in-site /login and /register pages. These do REAL auth
+ *                  when Supabase is configured (see src/lib/auth + .env.example),
+ *                  and fall back to a demo notice otherwise.
+ *  - "external" -> the existing Open edX login/register URLs (externalLinks).
+ *
+ * The auth *backend* is chosen separately and provider-agnostically in
+ * src/lib/auth/ (Supabase today; Open edX adapter stubbed for later).
+ */
+export type AuthMode = "local" | "external";
+
+/**
+ * Header CTA auth mode — env-driven so production teams can switch it without
+ * editing code (and so we never accidentally ship local/demo links).
+ *
+ * Set NEXT_PUBLIC_AUTH_MODE to:
+ *   - "external"       -> "Sign in" / "Register" CTAs go to the Open edX URLs.
+ *   - "local" | "demo" -> CTAs go to the in-site /login and /register pages.
+ *
+ * Anything else (including unset) falls back to "local" — the safe default for
+ * local development / presentation. NEXT_PUBLIC_* vars are inlined at build
+ * time, so set this before `npm run build`.
+ */
+export const authMode: AuthMode =
+  process.env.NEXT_PUBLIC_AUTH_MODE === "external" ? "external" : "local";
+
+export const authLinks = {
+  login: authMode === "external" ? externalLinks.login : "/login",
+  register: authMode === "external" ? externalLinks.register : "/register",
+  /** True in "external" mode, so the CTAs leave the site (open the LMS). */
+  isExternal: authMode === "external",
+};
+
 export const primaryNav: { label: string; children: { label: string; href: string }[] } = {
   label: "Catalogue",
   children: [
