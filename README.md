@@ -57,18 +57,25 @@ added later without touching the UI.
   shows a notice on submit and stores nothing. This keeps the repo
   **clone-and-run with zero setup** and the build green.
 
-The **Header CTA destinations** are a separate switch in
-[`src/data/site.ts`](src/data/site.ts):
+The **Header CTA destinations** are a separate switch, driven by the
+`NEXT_PUBLIC_AUTH_MODE` environment variable (resolved in
+[`src/data/site.ts`](src/data/site.ts)):
 
-```ts
-export const authMode = "local" as AuthMode;   // "local" | "external"
+```bash
+# .env.local  — read at build time
+NEXT_PUBLIC_AUTH_MODE=local      # or "demo" / "external"
 ```
 
-- `"local"` (default) → **Sign in** / **Register for free** → the in-site
-  `/login` / `/register` pages (which do real auth when Supabase is set).
-- `"external"` → the CTAs hand off to the existing Open edX login/register URLs.
+- `local` / `demo` (**default** when unset) → **Sign in** / **Register for free**
+  → the in-site `/login` / `/register` pages (which do real auth when Supabase
+  is set). This is the safe default for **local development / presentation**.
+- `external` → the CTAs hand off to the existing **Open edX** login/register URLs.
+  **Production deployments that want Open edX auth should set
+  `NEXT_PUBLIC_AUTH_MODE=external`** (before building, since `NEXT_PUBLIC_*` is
+  inlined at build time) so demo links are never shipped by accident.
 
-**Enrol** buttons remain **external links to Open edX** (they are not faked).
+**Enrol** buttons remain **external links to Open edX** regardless of this
+setting (they are not faked).
 
 ### Enable real auth (free — no credit card)
 
@@ -87,8 +94,8 @@ export const authMode = "local" as AuthMode;   // "local" | "external"
 When the university provides Open edX **OAuth credentials + API access**, complete
 the stub adapter in [`src/lib/auth/openedx.ts`](src/lib/auth/openedx.ts) and select
 it in [`src/lib/auth/index.ts`](src/lib/auth/index.ts) — or simply set
-`authMode = "external"` to hand off to the existing Open edX screens. Either way
-the `/login` / `/register` UI stays unchanged.
+`NEXT_PUBLIC_AUTH_MODE=external` to hand off to the existing Open edX screens.
+Either way the `/login` / `/register` UI stays unchanged.
 
 ---
 
@@ -165,8 +172,8 @@ npm run lint     # ESLint
 **Where links / config live**
 
 - `LMS_BASE` and all external/auth URLs: `src/data/site.ts`.
-- **Auth mode** (`local` ↔ `external`, Header CTA destination): `authMode` in
-  `src/data/site.ts`.
+- **Auth mode** (`local`/`demo` ↔ `external`, Header CTA destination): set the
+  `NEXT_PUBLIC_AUTH_MODE` env var; resolved by `authMode` in `src/data/site.ts`.
 - **Auth backend** (provider-agnostic): [`src/lib/auth/`](src/lib/auth/) —
   `index.ts` picks the active provider; `supabase.ts`, `demo.ts`, `openedx.ts`.
 - **Auth secrets:** `.env.local` (template in [`.env.example`](.env.example)).
@@ -178,7 +185,7 @@ Supabase project, run the schema, set two env vars, rebuild).
 
 **How to add Open edX auth later** — implement
 [`src/lib/auth/openedx.ts`](src/lib/auth/openedx.ts) and select it in
-`src/lib/auth/index.ts`, or set `authMode = "external"` (see §3).
+`src/lib/auth/index.ts`, or set `NEXT_PUBLIC_AUTH_MODE=external` (see §3).
 
 **How to refresh the course catalogue**
 

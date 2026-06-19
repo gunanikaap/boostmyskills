@@ -58,9 +58,20 @@ export const externalLinks = {
  */
 export type AuthMode = "local" | "external";
 
-// The cast keeps the value switchable: change "local" to "external" to hand the
-// Header CTAs off to the existing Open edX backend (no other change needed).
-export const authMode = "local" as AuthMode;
+/**
+ * Header CTA auth mode — env-driven so production teams can switch it without
+ * editing code (and so we never accidentally ship local/demo links).
+ *
+ * Set NEXT_PUBLIC_AUTH_MODE to:
+ *   - "external"       -> "Sign in" / "Register" CTAs go to the Open edX URLs.
+ *   - "local" | "demo" -> CTAs go to the in-site /login and /register pages.
+ *
+ * Anything else (including unset) falls back to "local" — the safe default for
+ * local development / presentation. NEXT_PUBLIC_* vars are inlined at build
+ * time, so set this before `npm run build`.
+ */
+export const authMode: AuthMode =
+  process.env.NEXT_PUBLIC_AUTH_MODE === "external" ? "external" : "local";
 
 export const authLinks = {
   login: authMode === "external" ? externalLinks.login : "/login",
