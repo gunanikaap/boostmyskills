@@ -13,7 +13,14 @@ export default function Header() {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [catalogueOpen, setCatalogueOpen] = useState(false);
+  const [myCoursesOpen, setMyCoursesOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  // "My courses" links, shown only when signed in (mirrors the live LMS header).
+  const myCoursesLinks = [
+    { label: "My Micro-programmes", href: "/dashboard/programmes" },
+    { label: "My Micro-credentials", href: "/dashboard" },
+  ];
 
   // Reflect the local Supabase session in the header (only in "local" auth mode;
   // in "external" mode the CTAs hand off to Open edX and there is no in-site
@@ -43,8 +50,43 @@ export default function Header() {
             <img src={images.logo} alt="BoostMySkills" className="h-14 w-[122px]" />
           </Link>
 
-          {/* Desktop navigation - live layout: Catalogue on the left, CTAs far right. */}
+          {/* Desktop navigation - live layout: nav on the left, CTAs far right. */}
           <nav className="hidden h-14 flex-1 items-center justify-between md:flex" aria-label="Primary">
+            <div className="flex items-center gap-2">
+            {showUser ? (
+              <div
+                className="relative"
+                onMouseEnter={() => setMyCoursesOpen(true)}
+                onMouseLeave={() => setMyCoursesOpen(false)}
+              >
+                <button
+                  type="button"
+                  className="flex items-center gap-[0.7rem] px-4 py-0 text-base font-semibold leading-none text-ink transition-colors hover:text-ink"
+                  aria-expanded={myCoursesOpen}
+                  aria-haspopup="true"
+                  onClick={() => setMyCoursesOpen((o) => !o)}
+                >
+                  My courses
+                  <svg width="15" height="15" viewBox="0 0 12 12" aria-hidden="true">
+                    <path d="M2 4.5l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+                {myCoursesOpen ? (
+                  <div className="absolute left-0 top-full w-60 rounded-xl border border-line bg-white p-2 shadow-lg">
+                    {myCoursesLinks.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="block rounded-xl px-4 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-surface hover:text-primary"
+                        onClick={() => setMyCoursesOpen(false)}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
             <div
               className="relative"
               onMouseEnter={() => setCatalogueOpen(true)}
@@ -77,6 +119,7 @@ export default function Header() {
                 </div>
               ) : null}
             </div>
+            </div>
 
             <div className="flex items-center gap-6 self-end">
               {showUser ? (
@@ -106,18 +149,18 @@ export default function Header() {
                   {userMenuOpen ? (
                     <div className="absolute right-0 top-full w-60 rounded-xl border border-line bg-white p-2 shadow-lg">
                       <Link
-                        href="/dashboard"
+                        href="/account"
                         className="block rounded-xl px-4 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-surface hover:text-primary"
                         onClick={() => setUserMenuOpen(false)}
                       >
-                        My Micro-credentials
+                        Account
                       </Link>
                       <button
                         type="button"
                         onClick={handleSignOut}
                         className="block w-full rounded-xl px-4 py-2.5 text-left text-sm font-medium text-ink transition-colors hover:bg-surface hover:text-primary"
                       >
-                        Sign out
+                        Sign Out
                       </button>
                     </div>
                   ) : null}
@@ -167,7 +210,24 @@ export default function Header() {
         {mobileOpen ? (
           <div className="border-t border-line bg-white md:hidden">
             <Container className="flex flex-col gap-1 py-4">
-              <span className="px-1 text-xs font-semibold uppercase tracking-widest text-muted">
+              {showUser ? (
+                <>
+                  <span className="px-1 text-xs font-semibold uppercase tracking-widest text-muted">
+                    My courses
+                  </span>
+                  {myCoursesLinks.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="rounded-lg px-1 py-2 text-base font-medium text-ink"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </>
+              ) : null}
+              <span className="mt-2 px-1 text-xs font-semibold uppercase tracking-widest text-muted">
                 {primaryNav.label}
               </span>
               {primaryNav.children.map((item) => (
@@ -184,11 +244,11 @@ export default function Header() {
                 {showUser ? (
                   <>
                     <Link
-                      href="/dashboard"
+                      href="/account"
                       className="rounded-lg px-1 py-2 text-base font-medium text-ink"
                       onClick={() => setMobileOpen(false)}
                     >
-                      My Micro-credentials
+                      Account
                     </Link>
                     <button
                       type="button"

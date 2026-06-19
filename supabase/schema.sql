@@ -12,6 +12,19 @@ create table if not exists public.profiles (
   created_at timestamptz not null default now()
 );
 
+-- Extra account/profile fields shown on /account (added idempotently so this
+-- file is safe to re-run on an existing project).
+alter table public.profiles add column if not exists country         text;
+alter table public.profiles add column if not exists year_of_birth   integer;
+alter table public.profiles add column if not exists gender          text;
+alter table public.profiles add column if not exists education       text;
+alter table public.profiles add column if not exists spoken_language text;
+alter table public.profiles add column if not exists linkedin        text;
+alter table public.profiles add column if not exists facebook        text;
+alter table public.profiles add column if not exists twitter         text;
+alter table public.profiles add column if not exists site_language   text;
+alter table public.profiles add column if not exists time_zone       text;
+
 -- Row Level Security: a user can only see / edit their own profile.
 alter table public.profiles enable row level security;
 
@@ -99,3 +112,20 @@ drop policy if exists "enrolments_delete_own" on public.enrolments;
 create policy "enrolments_delete_own"
   on public.enrolments for delete
   using (auth.uid() = user_id);
+
+-- ---------------------------------------------------------------------------
+-- Allow a signed-in user to permanently delete their OWN account (the /account
+-- "Delete My Account" action). security definer so it can remove the auth.users
+-- row (which cascades to profiles + enrolments). Granted to authenticated only.
+-- ---------------------------------------------------------------------------
+create or replace function public.delete_user()
+returns void
+language sql
+security definer
+set search_path = public, auth
+as $$
+  delete from auth.users where id = auth.uid();
+$$;
+
+revoke all on function public.delete_user() from public;
+grant execute on function public.delete_user() to authenticated;

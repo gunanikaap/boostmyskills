@@ -1,136 +1,131 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 import Container from "@/components/layout/Container";
-import Button from "@/components/ui/Button";
-import ProgramCard from "@/components/cards/ProgramCard";
-import CourseCard from "@/components/cards/CourseCard";
-import { programs } from "@/data/programs";
-import { courses } from "@/data/courses";
-import { isSupabaseConfigured } from "@/lib/supabase/client";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { listEnrolments } from "@/lib/db/enrolments";
+import ConfirmEmailBanner from "@/components/dashboard/ConfirmEmailBanner";
+import EmptyEnrolments from "@/components/dashboard/EmptyEnrolments";
+import { getLearner, relatedProgrammes } from "@/lib/dashboard/learner";
 
 export const metadata: Metadata = {
   title: "My Micro-credentials | BoostMySkills",
-  description: "Your BoostMySkills learner dashboard.",
+  description: "Your enrolled BoostMySkills micro-credentials.",
 };
 
 // Reads the auth session cookie, so it must render per-request.
 export const dynamic = "force-dynamic";
 
+function InfoIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" className="shrink-0">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
+      <path d="M12 11v5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="12" cy="7.5" r="1.2" fill="currentColor" />
+    </svg>
+  );
+}
+
 /**
- * Local learner dashboard, mirroring the live Open edX learner dashboard's
- * empty state. Protected by the local Supabase session: signed-out users are
- * sent to /login?next=/dashboard. Since this build does not track real
- * enrolments (those live in Open edX), it always shows the "not enrolled yet"
- * state and hands enrolment off to the public catalogue (/programs, /courses).
+ * "My Micro-credentials" — the learner's enrolled courses, mirroring the live
+ * LMS layout (image, Developed by, Course number, pass grade, View button, and
+ * Related Micro-programme(s)). Real enrolments come from the `enrolments` table.
  */
-export default async function DashboardPage() {
-  if (!isSupabaseConfigured) {
-    redirect(`/login?next=${encodeURIComponent("/dashboard")}`);
-  }
-
-  const supabase = createSupabaseServerClient();
-  const { data } = await supabase.auth.getUser();
-  if (!data.user) {
-    redirect(`/login?next=${encodeURIComponent("/dashboard")}`);
-  }
-
-  const user = data.user;
-  // Only shown if a session exists but the email is unconfirmed (e.g. if email
-  // confirmation is later turned off in Supabase). With confirmation on, a
-  // signed-in user is already confirmed, so this banner stays hidden.
-  const emailConfirmed = Boolean(user.email_confirmed_at ?? user.confirmed_at);
-
-  // This user's real enrolments (from the DB), resolved to catalogue items.
-  const enrolments = await listEnrolments(supabase, user.id);
-  const enrolledPrograms = enrolments
-    .filter((e) => e.kind === "program")
-    .map((e) => programs.find((p) => p.slug === e.ref))
-    .filter((p): p is (typeof programs)[number] => Boolean(p));
-  const enrolledCourses = enrolments
-    .filter((e) => e.kind === "course")
-    .map((e) => courses.find((c) => c.id === e.ref))
-    .filter((c): c is (typeof courses)[number] => Boolean(c));
-  const hasEnrolments = enrolledPrograms.length + enrolledCourses.length > 0;
+export default async function MyCredentialsPage() {
+  const { emailConfirmed, enrolledCourses } = await getLearner("/dashboard");
 
   return (
     <>
-      {!emailConfirmed ? (
-        <div className="bg-[#00B0F0]">
-          <Container className="py-3 text-center text-sm font-medium text-ink">
-            Remember to confirm your email so that you can keep learning — open
-            the confirmation link we sent (check your spam folder).
-          </Container>
-        </div>
-      ) : null}
-
+      <ConfirmEmailBanner show={!emailConfirmed} />
       <section className="py-9 lg:py-12">
-        <Container className="!max-w-[1200px]">
+        <Container className="!max-w-[1100px]">
           <h1 className="text-[2.5rem] font-semibold leading-tight tracking-[-1.16px] text-ink sm:text-[3rem]">
             My Micro-credentials
           </h1>
 
-          {hasEnrolments ? (
-            // Real enrolments — rendered with the same cards used across the site.
-            <div className="mt-10 space-y-14">
-              {enrolledPrograms.length > 0 ? (
-                <div>
-                  <h2 className="mb-6 text-2xl font-semibold text-ink">
-                    Micro-programmes
-                  </h2>
-                  <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                    {enrolledPrograms.map((program) => (
-                      <ProgramCard key={program.slug} program={program} />
-                    ))}
+          {enrolledCourses.length > 0 ? (
+            <div className="mt-10 space-y-16">
+              {enrolledCourses.map((course) => {
+                const related = relatedProgrammes(course.name);
+                return (
+                  <div key={course.id}>
+                    <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
+                      <div className="h-44 w-full max-w-[260px] shrink-0 overflow-hidden rounded-2xl bg-surface-alt">
+                        {course.image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={course.image}
+                            alt=""
+                            className="h-full w-full object-cover"
+                          />
+                        ) : null}
+                      </div>
+                      <div className="flex-1">
+                        <h2 className="text-2xl font-bold leading-tight text-ink sm:text-[1.75rem]">
+                          {course.name}
+                        </h2>
+                        <p className="mt-4 text-sm font-semibold text-muted">
+                          Developed by:{" "}
+                          <span className="text-primary">{course.org}</span>
+                        </p>
+                        <p className="mt-1.5 text-sm font-semibold text-muted">
+                          Course number:{" "}
+                          <span className="text-ink">{course.number}</span>
+                        </p>
+                        <p className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-primary">
+                          <InfoIcon />
+                          Grade required to pass the course: 50%
+                        </p>
+                        <div className="mt-5">
+                          <a
+                            href={course.aboutUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-dark"
+                          >
+                            View Micro-credential
+                            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+                              <path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    {related.length > 0 ? (
+                      <div className="mt-6">
+                        <p className="text-sm font-semibold text-primary">
+                          Related Micro-programme(s):
+                        </p>
+                        <div className="mt-3 space-y-3">
+                          {related.map((p) => (
+                            <div key={p.slug} className="flex items-center gap-4">
+                              <div className="h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-surface-alt">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={p.image}
+                                  alt=""
+                                  className="h-full w-full object-cover"
+                                />
+                              </div>
+                              <div>
+                                <p className="font-medium text-ink">{p.title}</p>
+                                <a
+                                  href={p.enrolUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm font-medium text-ink underline transition-colors hover:text-primary"
+                                >
+                                  View micro-programme
+                                </a>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
-                </div>
-              ) : null}
-              {enrolledCourses.length > 0 ? (
-                <div>
-                  <h2 className="mb-6 text-2xl font-semibold text-ink">
-                    Micro-credentials
-                  </h2>
-                  <div className="grid gap-8 [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]">
-                    {enrolledCourses.map((course) => (
-                      <CourseCard key={course.id} course={course} />
-                    ))}
-                  </div>
-                </div>
-              ) : null}
+                );
+              })}
             </div>
           ) : (
-            // Empty state — matches the live LMS learner dashboard.
-            <div className="mt-10 rounded-card bg-surface-alt p-8 lg:p-14">
-              <div className="grid items-center gap-10 lg:grid-cols-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/images/dashboard-empty.svg"
-                  alt=""
-                  className="mx-auto w-full max-w-[380px]"
-                />
-                <div>
-                  <h2 className="text-3xl font-bold leading-tight text-ink sm:text-[2.75rem] sm:leading-[1.15]">
-                    You are not enrolled in any micro-programme or micro-credential
-                    yet
-                  </h2>
-                  <div className="mt-8 flex flex-wrap gap-4">
-                    <Button href="/programs" variant="primary" className="!px-7 !py-3">
-                      Enrol in micro-programmes
-                      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </Button>
-                    <Button href="/courses" variant="primary" className="!px-7 !py-3">
-                      Enrol in micro-credentials
-                      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <EmptyEnrolments />
           )}
         </Container>
       </section>
