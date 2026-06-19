@@ -4,9 +4,12 @@ import Container from "@/components/layout/Container";
 import PageHeader from "@/components/ui/PageHeader";
 import Button from "@/components/ui/Button";
 import { programs } from "@/data/programs";
+import { courses } from "@/data/courses";
+import { LMS_BASE } from "@/data/site";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { addEnrolment } from "@/lib/db/enrolments";
+import type { EnrolmentKind } from "@/lib/db/types";
 
 export const metadata: Metadata = {
   title: "Enrol | BoostMySkills",
@@ -17,30 +20,73 @@ export const metadata: Metadata = {
 // Reads the auth session cookie, so it must render per-request.
 export const dynamic = "force-dynamic";
 
+interface EnrolItem {
+  kind: EnrolmentKind;
+  ref: string;
+  title?: string;
+  sourceUrl?: string;
+  label: string;
+  selfQuery: string;
+  backHref: string;
+  backLabel: string;
+}
+
+/** Resolve the programme or course being enrolled in from the query params. */
+function resolveItem(params: {
+  program?: string;
+  course?: string;
+}): EnrolItem | null {
+  if (typeof params.program === "string") {
+    const slug = params.program;
+    const p = programs.find((x) => x.slug === slug);
+    return {
+      kind: "program",
+      ref: slug,
+      title: p?.title,
+      sourceUrl: p?.enrolUrl,
+      label: p ? `${p.title} (${p.code} | ${p.project})` : "Micro-programme enrolment",
+      selfQuery: `?program=${encodeURIComponent(slug)}`,
+      backHref: "/programs",
+      backLabel: "Back to programmes",
+    };
+  }
+  if (typeof params.course === "string") {
+    const id = params.course;
+    const c = courses.find((x) => x.id === id);
+    return {
+      kind: "course",
+      ref: id,
+      title: c?.name,
+      sourceUrl: c?.aboutUrl ?? `${LMS_BASE}/courses/${id}/about`,
+      label: c ? `${c.name} (${c.org})` : "Micro-credential enrolment",
+      selfQuery: `?course=${encodeURIComponent(id)}`,
+      backHref: "/courses",
+      backLabel: "Back to micro-credentials",
+    };
+  }
+  return null;
+}
+
 /**
  * Local, auth-gated enrolment hand-off page (used in "local"/"demo" auth mode).
  *
  * Flow:
- *  - The Enrol buttons (see ProgramCard / enrolLink) point here in local mode.
+ *  - The Enrol buttons (ProgramCard / CourseCard) point here in local mode.
  *  - If Supabase is configured and there is NO session, we bounce to
- *    /login?next=<this page> so the user signs in with the local Supabase auth
- *    and returns here afterwards.
- *  - Once signed in, we show an honest hand-off: this build captured the
- *    enrolment intent locally only. Real LMS enrolment still lives in Open edX
+ *    /login?next=<this page> so the user signs in and returns here afterwards.
+ *  - Once signed in we RECORD the enrolment (idempotent, shown on /dashboard)
+ *    and show an honest hand-off: the real LMS enrolment still lives in Open edX
  *    and is offered via a "Continue to Open edX enrolment" link.
  *
- * This page never claims that Supabase enrols anyone into Open edX, and it does
- * not store anything (no enrolment table exists in this build).
+ * This page never claims that Supabase enrols anyone into Open edX.
  */
 export default async function EnrolPage({
   searchParams,
 }: {
-  searchParams: { program?: string };
+  searchParams: { program?: string; course?: string };
 }) {
-  const slug =
-    typeof searchParams.program === "string" ? searchParams.program : undefined;
-  const program = slug ? programs.find((p) => p.slug === slug) : undefined;
-  const selfUrl = `/enrol${slug ? `?program=${encodeURIComponent(slug)}` : ""}`;
+  const item = resolveItem(searchParams);
+  const selfUrl = `/enrol${item?.selfQuery ?? ""}`;
 
   // Verify the local Supabase session (the only auth this build performs).
   let userEmail: string | undefined;
@@ -56,12 +102,12 @@ export default async function EnrolPage({
     // Record this enrolment request for the user (idempotent). The real LMS
     // enrolment still happens at Open edX via the hand-off link below; this is
     // this app's own record, shown on /dashboard.
-    if (program) {
+    if (item) {
       await addEnrolment(supabase, data.user.id, {
-        kind: "program",
-        ref: program.slug,
-        title: program.title,
-        sourceUrl: program.enrolUrl,
+        kind: item.kind,
+        ref: item.ref,
+        title: item.title,
+        sourceUrl: item.sourceUrl,
       });
     }
   }
@@ -75,11 +121,7 @@ export default async function EnrolPage({
     <>
       <PageHeader
         title="Enrolment request received"
-        description={
-          program
-            ? `${program.title} (${program.code} | ${program.project})`
-            : "Micro-programme enrolment"
-        }
+        description={item?.label ?? "Enrolment"}
       />
       <section className="bg-white pb-24">
         <Container className="!max-w-[1120px] lg:!px-0">
@@ -104,13 +146,13 @@ export default async function EnrolPage({
             )}
 
             <div className="mt-6 flex flex-wrap gap-3">
-              {program ? (
-                <Button href={program.enrolUrl} variant="primary" external>
+              {item?.sourceUrl ? (
+                <Button href={item.sourceUrl} variant="primary" external>
                   Continue to Open edX enrolment
                 </Button>
               ) : null}
-              <Button href="/programs" variant="outline">
-                Back to programmes
+              <Button href={item?.backHref ?? "/programs"} variant="outline">
+                {item?.backLabel ?? "Back to programmes"}
               </Button>
             </div>
           </div>

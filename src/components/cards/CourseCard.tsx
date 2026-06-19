@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { enrolLinkCourse } from "@/data/site";
 import type { Course } from "@/data/courses";
 
 // Live course card arrow (.r4c-arrow / .course-arrow path).
@@ -23,6 +25,9 @@ function ArrowIcon({ className = "ml-2" }: { className?: string }) {
 }
 
 export default function CourseCard({ course }: { course: Course }) {
+  // "Enrol" routes through the auth-gated /enrol hand-off in local mode (recorded
+  // + shown on /dashboard); opens the Open edX course page in external mode.
+  const enrol = enrolLinkCourse(course);
   return (
     // Live .card: max-width 500px, radius 2rem, shadow, no border; centred in
     // track. Hover: background -> #f5f5f5 (live .find-courses .course:hover).
@@ -54,15 +59,25 @@ export default function CourseCard({ course }: { course: Course }) {
         {/* Live .more-info: padding 0 1.5rem, pb 2rem, flex justify-between. */}
         <div className="flex items-center justify-between px-6 pb-8 pt-8">
           {/* Live .rc4-btn: radius 2.7rem, padding 7.5px 30px, height 3.2rem, weight 500, 0.95rem. */}
-          <a
-            href={course.aboutUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex h-[3.2rem] items-center rounded-full bg-primary px-[30px] text-[0.95rem] font-medium text-white transition-opacity hover:opacity-90"
-          >
-            Enrol
-            <ArrowIcon className="ml-2" />
-          </a>
+          {enrol.external ? (
+            <a
+              href={enrol.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-[3.2rem] items-center rounded-full bg-primary px-[30px] text-[0.95rem] font-medium text-white transition-opacity hover:opacity-90"
+            >
+              Enrol
+              <ArrowIcon className="ml-2" />
+            </a>
+          ) : (
+            <Link
+              href={enrol.href}
+              className="inline-flex h-[3.2rem] items-center rounded-full bg-primary px-[30px] text-[0.95rem] font-medium text-white transition-opacity hover:opacity-90"
+            >
+              Enrol
+              <ArrowIcon className="ml-2" />
+            </Link>
+          )}
           {/* Live .r4c-moreinfo: 1rem, weight 700, #000, arrow ml 0.3rem. */}
           <a
             href={course.aboutUrl}

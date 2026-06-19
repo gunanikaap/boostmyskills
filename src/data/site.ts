@@ -107,6 +107,24 @@ export function enrolLink(program: { slug: string; enrolUrl: string }): {
 }
 
 /**
+ * Same as enrolLink, for an individual course (micro-credential). In local mode
+ * the course Enrol routes through the auth-gated /enrol hand-off (recorded +
+ * shown on /dashboard); in external mode it opens the Open edX course page.
+ */
+export function enrolLinkCourse(course: { id: string; aboutUrl: string }): {
+  href: string;
+  external: boolean;
+} {
+  if (authMode === "external") {
+    return { href: course.aboutUrl, external: true };
+  }
+  return {
+    href: `/enrol?course=${encodeURIComponent(course.id)}`,
+    external: false,
+  };
+}
+
+/**
  * Guard a `next` redirect target so we only ever redirect within this site.
  * Accepts site-relative absolute paths ("/enrol?program=mp1"); rejects external
  * or protocol-relative URLs ("//evil.com", "/\\evil.com", "https://…") to avoid
