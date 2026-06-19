@@ -53,6 +53,14 @@ added later without touching the UI.
   really sign users in / create accounts. Supabase handles password hashing,
   sessions and email verification (free tier; **we never store raw passwords**).
   Extra profile data (full name) lands in a `public.profiles` table.
+  - **Registration is stored in Supabase** (`auth.users` + the `profiles` row via
+    the signup trigger in [`supabase/schema.sql`](supabase/schema.sql)), and
+    **only a registered account can sign in** — unknown credentials are rejected.
+  - This project's Supabase keeps **email confirmation on** (`mailer_autoconfirm`
+    is off), so registering shows *"check your inbox for a confirmation link"*;
+    the new user must **click that link before they can sign in**. (To allow
+    instant login instead, turn off *Confirm email* under Supabase →
+    Authentication → Providers → Email.)
 - **Demo — nothing configured** (default): the same `/login` / `/register` UI
   shows a notice on submit and stores nothing. This keeps the repo
   **clone-and-run with zero setup** and the build green.
@@ -74,18 +82,61 @@ NEXT_PUBLIC_AUTH_MODE=local      # or "demo" / "external"
   `NEXT_PUBLIC_AUTH_MODE=external`** (before building, since `NEXT_PUBLIC_*` is
   inlined at build time) so demo links are never shipped by accident.
 
-**Enrol** buttons remain **external links to Open edX** regardless of this
-setting (they are not faked).
+### Enrol buttons
+
+The programme **Enrol** buttons follow the same `NEXT_PUBLIC_AUTH_MODE` switch
+(resolved by `enrolLink()` in [`src/data/site.ts`](src/data/site.ts)):
+
+- `local` / `demo` (default) → Enrol routes through the **local Supabase auth
+  first**: it points to an in-site [`/enrol`](src/app/enrol/page.tsx) hand-off
+  page that verifies the Supabase session. Signed-out users are sent to
+  `/login?next=/enrol?program=…` and returned after sign-in. Once signed in,
+  `/enrol` shows an **honest hand-off**: the demo has captured the enrolment
+  intent locally only, and offers a "Continue to Open edX enrolment" link to the
+  real LMS. **Nothing is stored, and Supabase does not enrol anyone into Open
+  edX** — that remains the production LMS's job.
+- `external` → Enrol links go **directly to the original Open edX enrol URL**
+  (the production LMS handles auth + enrolment), exactly as before.
+
+The original Open edX `enrolUrl` is always preserved in
+[`src/data/programs.ts`](src/data/programs.ts); local mode just gates it behind
+the local sign-in. (Without Supabase keys, `/enrol` can't verify a session, so
+it shows the hand-off notice directly instead of looping back to a no-op login.)
+
+### Learner dashboard (signed-in experience)
+
+After a successful sign-in (local mode) users land on
+[`/dashboard`](src/app/dashboard/page.tsx) — a **"My Micro-credentials"** learner
+page that mirrors the live Open edX learner dashboard's empty state. It is
+**protected** (signed-out visitors are redirected to `/login?next=/dashboard`)
+and shows the learner's **real enrolments** (stored in the `enrolments` table —
+see below): each programme/course they enrol in appears here as a card. When
+they have none, it shows the *"You are not enrolled… yet"* empty state with
+**Enrol in micro-programmes** / **Enrol in micro-credentials** buttons. A
+confirm-email reminder banner is shown only when a session's email is
+unconfirmed (hidden in the default confirmation-required flow, since signed-in
+users are already confirmed).
+
+When signed in (local mode), the **header** swaps the Sign in / Register CTAs for
+the user's name + a menu (My Micro-credentials, Sign out). The dashboard
+illustration is a placeholder at
+[`public/images/dashboard-empty.svg`](public/images/dashboard-empty.svg) — drop
+the exact LMS asset in at that path to replace it 1:1.
 
 ### Enable real auth (free — no credit card)
 
 1. Create a project at <https://supabase.com>.
 2. Open the SQL editor and run [`supabase/schema.sql`](supabase/schema.sql)
-   (creates the `profiles` table + Row Level Security + signup trigger).
+   (creates the `profiles`, `contact_messages` and `enrolments` tables + Row
+   Level Security + the signup trigger). Safe to re-run.
 3. Project Settings → API: copy the **Project URL** and the public **anon key**.
 4. Copy [`.env.example`](.env.example) → `.env.local` and paste both values.
 5. Rebuild / restart (`NEXT_PUBLIC_*` vars are read at build time).
 6. (Optional) In Supabase → Authentication, toggle "Confirm email" to taste.
+7. **Branded activation email:** apply the "Activate your BoostMySkills account"
+   template and set the Site/Redirect URLs (and, for production, a custom SMTP
+   sender like `info@boostmyskills.eu`) — see
+   [`supabase/email-templates/README.md`](supabase/email-templates/README.md).
 
 `.env.local` is git-ignored, so secrets never get committed.
 
@@ -101,21 +152,26 @@ Either way the `/login` / `/register` UI stays unchanged.
 
 ## 4. Known limitations
 
-- **`/courses` data is a snapshot.** It is generated from the **live public Open
-  edX course-discovery API** (`/api/courses/v1/courses/` and the discovery search)
-  — 76 real courses with their real images, organisations, projects, topics, and
-  micro-programme facet, snapshotted into [`src/data/courses.ts`](src/data/courses.ts),
-  [`src/data/courseFacets.ts`](src/data/courseFacets.ts) and
-  [`public/images/courses/`](public/images/courses/). It is **not live** — re-run
-  the fetch (or wire a live API call) to refresh. One platform "test" course is
-  excluded, so the count is 76. The **Micro-Programme facet filtering** is
-  best-effort (the discovery API doesn't expose programme membership per course).
-- **Contact form validates but does not deliver.** `POST /api/contact`
-  type-checks the input and returns clear status codes (`422` invalid, `200` ok),
-  but does **not** send or store the message (the `200` response is explicit:
-  `delivered: false`) and the success UI says so. Plug in a provider at the marked
-  integration point in [`src/app/api/contact/route.ts`](src/app/api/contact/route.ts).
-- **Enrolment remains external** (Open edX).
+- **`/courses` is served live.** The catalogue is fetched at request time from
+  the **public Open edX course API** (`{LMS}/api/courses/v1/courses/`) and
+  cached for an hour, with the facets (Project / Organisation / Topic) computed
+  from the live data — see [`src/lib/courses/catalogue.ts`](src/lib/courses/catalogue.ts).
+  Each live course is enriched from the curated snapshot
+  ([`src/data/courses.ts`](src/data/courses.ts), local images under
+  [`public/images/courses/`](public/images/courses/)) where available; the
+  snapshot is also the **fallback** if the API is unreachable, so the page never
+  breaks. Platform "test" courses are filtered out. The **Micro-Programme facet**
+  remains curated (the course API doesn't expose programme membership per course).
+- **Contact form stores submissions.** `POST /api/contact` validates and **saves
+  every message** to the `contact_messages` table (read them in the Supabase
+  dashboard). An optional email notification is sent when `RESEND_API_KEY` +
+  `CONTACT_NOTIFY_TO` are set (see [`.env.example`](.env.example)); without them
+  it simply stores. If no database is configured it falls back to validation-only
+  and says so honestly. See [`src/app/api/contact/route.ts`](src/app/api/contact/route.ts).
+- **Enrolment is recorded locally; LMS enrolment stays in Open edX.** `/enrol`
+  saves the user's enrolment request to the `enrolments` table (shown on
+  `/dashboard`); the real course enrolment still happens at Open edX via the
+  hand-off link. This app does not fake Open edX enrolment.
 - **Auth is independent of Open edX.** With Supabase configured, accounts created
   here live in *your* Supabase project, separate from Open edX accounts, until an
   Open edX adapter is implemented (designed-for; see §3). Without Supabase keys
