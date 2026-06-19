@@ -90,6 +90,7 @@ export default function AuthForm({
             type={field.type}
             placeholder={field.placeholder}
             autoComplete={field.autoComplete}
+            required
             className="h-11 w-full rounded-lg border border-line-mid bg-white px-3.5 text-base text-ink outline-none transition-colors placeholder:text-[#9b9b9b] focus:border-primary"
           />
         </div>

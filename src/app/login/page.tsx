@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import AuthShell from "@/components/auth/AuthShell";
 import AuthForm from "@/components/auth/AuthForm";
 
@@ -32,12 +31,12 @@ export default function LoginPage() {
           },
         ]}
         footer={
-          <Link
-            href="/login"
-            className="block text-center text-sm font-semibold text-primary hover:text-primary-dark"
-          >
-            Forgot password?
-          </Link>
+          // Password reset is not implemented in this handoff build (the local
+          // Supabase/demo auth has no reset flow wired up), so this is honest,
+          // non-interactive text rather than a link that pretends to work.
+          <p className="block text-center text-sm font-medium text-muted">
+            Password reset is not available in this build.
+          </p>
         }
       />
     </AuthShell>

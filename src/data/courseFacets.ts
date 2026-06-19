@@ -10,7 +10,7 @@ export interface OrgFacet {
   count: number;
 }
 
-export const projectFacet: Facet[] = [{"value":"RES4CITY","count":45},{"value":"SHERLOCK","count":17},{"value":"RESSKILL","count":14},{"value":"COSS","count":1}];
+export const projectFacet: Facet[] = [{"value":"RES4CITY","count":44},{"value":"SHERLOCK","count":17},{"value":"RESSKILL","count":14},{"value":"COSS","count":1}];
 
 export const orgFacet: OrgFacet[] = [
  {
@@ -129,11 +129,6 @@ export const orgFacet: OrgFacet[] = [
   "count": 1
  },
  {
-  "value": "Tesst",
-  "label": "Tesst",
-  "count": 1
- },
- {
   "value": "UNIPARTHENOPE",
   "label": "Università degli Studi di Napoli Parthenope",
   "count": 1
@@ -180,7 +175,7 @@ export const topicFacet: Facet[] = [
  },
  {
   "value": "Data Analytics",
-  "count": 3
+  "count": 2
  },
  {
   "value": "Energy Markets",

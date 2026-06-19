@@ -105,16 +105,24 @@ the `/login` / `/register` UI stays unchanged.
   best-effort (the discovery API doesn't expose programme membership per course).
 - **Contact form validates but does not deliver.** `POST /api/contact`
   type-checks the input and returns clear status codes (`422` invalid, `200` ok),
-  but does **not** send an email yet — plug in a provider at the marked
+  but does **not** send or store the message (the `200` response is explicit:
+  `delivered: false`) and the success UI says so. Plug in a provider at the marked
   integration point in [`src/app/api/contact/route.ts`](src/app/api/contact/route.ts).
 - **Enrolment remains external** (Open edX).
 - **Auth is independent of Open edX.** With Supabase configured, accounts created
   here live in *your* Supabase project, separate from Open edX accounts, until an
   Open edX adapter is implemented (designed-for; see §3). Without Supabase keys
-  the auth pages are demo-only and store nothing.
+  the auth pages are demo-only and store nothing. **Password reset is not wired
+  up** in this build, so the login screen states that honestly rather than
+  offering a non-working link.
 - **Not pixel-perfect.** Layout, type, and spacing were matched against the live
   theme CSS, but a few exact `rem` values are approximated by Tailwind's scale and
   some per-course artwork differs from live.
+- **Open dependency advisories.** `npm audit --omit=dev` reports Next.js / bundled
+  PostCSS vulnerabilities whose only fix is a breaking major upgrade
+  (Next 14 → 16). This was **not** applied in the handoff build (it needs an
+  async-API migration and re-test); see [`SECURITY_NOTES.md`](SECURITY_NOTES.md)
+  for the finding, the decision, and the recommended upgrade path for deployment.
 
 ---
 

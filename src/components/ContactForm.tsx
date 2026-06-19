@@ -45,9 +45,11 @@ export default function ContactForm() {
   if (status === "success") {
     return (
       <div className="rounded-card border border-line bg-surface p-8 text-center">
-        <h3 className="text-xl font-semibold text-ink">Message sent</h3>
+        <h3 className="text-xl font-semibold text-ink">Message validated</h3>
         <p className="mt-2 text-muted">
-          Thanks for getting in touch &mdash; we&apos;ll get back to you soon.
+          Demo validation passed &mdash; email delivery is not configured in this
+          handoff build, so the message was not sent. Connect an email provider to
+          deliver messages.
         </p>
         <button
           type="button"
