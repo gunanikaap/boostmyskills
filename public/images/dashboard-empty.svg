@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 420" fill="none" role="img" aria-label="No enrolments yet">
+  <!-- Placeholder equivalent of the live LMS empty-state illustration.
+       Swap this file 1:1 with the exact asset when available. -->
+  <ellipse cx="210" cy="232" rx="184" ry="150" fill="#EAF3E7"/>
+  <!-- screen / tablet -->
+  <rect x="118" y="70" width="214" height="252" rx="16" fill="#ffffff" stroke="#079845" stroke-width="6"/>
+  <path d="M118 86a16 16 0 0 1 16-16h182a16 16 0 0 1 16 16v24H118z" fill="#079845"/>
+  <circle cx="140" cy="90" r="5" fill="#ffffff"/>
+  <circle cx="158" cy="90" r="5" fill="#ffffff"/>
+  <circle cx="176" cy="90" r="5" fill="#ffffff"/>
+  <!-- content bars -->
+  <rect x="145" y="138" width="162" height="18" rx="9" fill="#D5E7D0"/>
+  <rect x="145" y="170" width="162" height="18" rx="9" fill="#79C285"/>
+  <rect x="145" y="202" width="162" height="18" rx="9" fill="#D5E7D0"/>
+  <rect x="145" y="234" width="112" height="18" rx="9" fill="#79C285"/>
+  <!-- magnifier lens -->
+  <circle cx="252" cy="194" r="62" fill="#ffffff" stroke="#057A37" stroke-width="8"/>
+  <line x1="298" y1="240" x2="340" y2="282" stroke="#057A37" stroke-width="14" stroke-linecap="round"/>
+  <!-- graduation cap inside the lens -->
+  <path d="M252 162l48 18-48 18-48-18z" fill="#079845"/>
+  <path d="M228 190v18c0 9 11 16 24 16s24-7 24-16v-18l-24 9z" fill="#057A37"/>
+  <line x1="300" y1="180" x2="300" y2="210" stroke="#079845" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="300" cy="213" r="5" fill="#079845"/>
+  <!-- stacked books -->
+  <rect x="86" y="276" width="132" height="22" rx="6" fill="#79C285"/>
+  <rect x="70" y="298" width="150" height="22" rx="6" fill="#079845"/>
+  <rect x="78" y="320" width="162" height="22" rx="6" fill="#057A37"/>
+  <!-- sparkles -->
+  <circle cx="342" cy="92" r="6" fill="#79C285"/>
+  <circle cx="362" cy="122" r="4" fill="#079845"/>
+  <path d="M352 60l4 11 11 4-11 4-4 11-4-11-11-4 11-4z" fill="#B4B736"/>
+  <circle cx="74" cy="150" r="5" fill="#79C285"/>
+</svg>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import AuthShell from "@/components/auth/AuthShell";
 import AuthForm from "@/components/auth/AuthForm";
+import { safeNextPath } from "@/data/site";
 
 export const metadata: Metadata = {
   title: "Sign in | BoostMySkills",
@@ -8,12 +9,21 @@ export const metadata: Metadata = {
     "Sign in to BoostMySkills. Uses Supabase auth when configured, otherwise a demo screen.",
 };
 
-export default function LoginPage() {
+export default function LoginPage({
+  searchParams,
+}: {
+  searchParams: { next?: string };
+}) {
+  // Validate the redirect target so we never bounce to an external URL.
+  const safeNext = safeNextPath(searchParams.next);
+  const nextPath = safeNext === "/" ? undefined : safeNext;
+
   return (
-    <AuthShell active="login">
+    <AuthShell active="login" nextPath={nextPath}>
       <AuthForm
         action="login"
         submitLabel="Sign in"
+        nextPath={nextPath}
         fields={[
           {
             name: "identifier",

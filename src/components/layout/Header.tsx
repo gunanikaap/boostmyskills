@@ -2,13 +2,33 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Container from "@/components/layout/Container";
 import Button from "@/components/ui/Button";
 import { images, primaryNav, authLinks } from "@/data/site";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useSupabaseUser } from "@/lib/auth/useSupabaseUser";
 
 export default function Header() {
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [catalogueOpen, setCatalogueOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  // Reflect the local Supabase session in the header (only in "local" auth mode;
+  // in "external" mode the CTAs hand off to Open edX and there is no in-site
+  // session). Falls back to the existing CTAs when signed out / demo.
+  const user = useSupabaseUser();
+  const showUser = !authLinks.isExternal && !!user;
+
+  async function handleSignOut() {
+    setUserMenuOpen(false);
+    setMobileOpen(false);
+    const supabase = createSupabaseBrowserClient();
+    await supabase.auth.signOut();
+    router.refresh();
+    router.push("/");
+  }
   const registerButtonClass =
     "!border-primary !bg-white !px-12 !py-2 !text-base !font-bold !leading-[30px] !text-ink hover:!border-primary hover:!bg-white hover:!text-ink";
   const signInButtonClass =
@@ -59,22 +79,69 @@ export default function Header() {
             </div>
 
             <div className="flex items-center gap-6 self-end">
-              <Button
-                href={authLinks.register}
-                variant="light"
-                className={registerButtonClass}
-                external={authLinks.isExternal}
-              >
-                Register for free
-              </Button>
-              <Button
-                href={authLinks.login}
-                variant="primary"
-                className={signInButtonClass}
-                external={authLinks.isExternal}
-              >
-                Sign in
-              </Button>
+              {showUser ? (
+                <div
+                  className="relative"
+                  onMouseEnter={() => setUserMenuOpen(true)}
+                  onMouseLeave={() => setUserMenuOpen(false)}
+                >
+                  <button
+                    type="button"
+                    aria-expanded={userMenuOpen}
+                    aria-haspopup="true"
+                    onClick={() => setUserMenuOpen((o) => !o)}
+                    className="flex items-center gap-2 px-2 py-1 text-base font-semibold leading-none text-ink"
+                  >
+                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-surface-alt text-primary">
+                      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="8" r="4" fill="currentColor" />
+                        <path d="M4 20c0-4 4-6 8-6s8 2 8 6" fill="currentColor" />
+                      </svg>
+                    </span>
+                    <span className="max-w-[140px] truncate">{user!.name}</span>
+                    <svg width="15" height="15" viewBox="0 0 12 12" aria-hidden="true">
+                      <path d="M2 4.5l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                  {userMenuOpen ? (
+                    <div className="absolute right-0 top-full w-60 rounded-xl border border-line bg-white p-2 shadow-lg">
+                      <Link
+                        href="/dashboard"
+                        className="block rounded-xl px-4 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-surface hover:text-primary"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        My Micro-credentials
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={handleSignOut}
+                        className="block w-full rounded-xl px-4 py-2.5 text-left text-sm font-medium text-ink transition-colors hover:bg-surface hover:text-primary"
+                      >
+                        Sign out
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
+              ) : (
+                <>
+                  <Button
+                    href={authLinks.register}
+                    variant="light"
+                    className={registerButtonClass}
+                    external={authLinks.isExternal}
+                  >
+                    Register for free
+                  </Button>
+                  <Button
+                    href={authLinks.login}
+                    variant="primary"
+                    className={signInButtonClass}
+                    external={authLinks.isExternal}
+                  >
+                    Sign in
+                  </Button>
+                </>
+              )}
             </div>
           </nav>
 
@@ -114,22 +181,43 @@ export default function Header() {
                 </Link>
               ))}
               <div className="mt-3 flex flex-col gap-2">
-                <Button
-                  href={authLinks.register}
-                  variant="light"
-                  className={`${registerButtonClass} w-full`}
-                  external={authLinks.isExternal}
-                >
-                  Register for free
-                </Button>
-                <Button
-                  href={authLinks.login}
-                  variant="primary"
-                  className={`${signInButtonClass} w-full`}
-                  external={authLinks.isExternal}
-                >
-                  Sign in
-                </Button>
+                {showUser ? (
+                  <>
+                    <Link
+                      href="/dashboard"
+                      className="rounded-lg px-1 py-2 text-base font-medium text-ink"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      My Micro-credentials
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      className={`${signInButtonClass} w-full rounded-full`}
+                    >
+                      Sign out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      href={authLinks.register}
+                      variant="light"
+                      className={`${registerButtonClass} w-full`}
+                      external={authLinks.isExternal}
+                    >
+                      Register for free
+                    </Button>
+                    <Button
+                      href={authLinks.login}
+                      variant="primary"
+                      className={`${signInButtonClass} w-full`}
+                      external={authLinks.isExternal}
+                    >
+                      Sign in
+                    </Button>
+                  </>
+                )}
               </div>
             </Container>
           </div>

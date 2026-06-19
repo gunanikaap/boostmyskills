@@ -1,4 +1,8 @@
 import { NextResponse } from "next/server";
+import { isSupabaseConfigured } from "@/lib/supabase/client";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { insertContactMessage } from "@/lib/db/contact";
+import { notifyContactByEmail } from "@/lib/email/notifyContact";
 
 interface ContactPayload {
   name?: unknown;
@@ -12,9 +16,10 @@ const isNonEmptyString = (value: unknown): value is string =>
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
- * Clean, typed contact endpoint. Validates input and returns a JSON result.
- * Plug in a transactional email provider (e.g. Resend, SendGrid, SMTP) where
- * indicated to actually deliver the message.
+ * Contact endpoint. Validates the input, then STORES the message in the
+ * `contact_messages` table (see supabase/schema.sql) and, if configured, sends
+ * an email notification. Falls back to validation-only when no database is
+ * configured, so the repo still clones-and-runs.
  */
 export async function POST(request: Request) {
   let body: ContactPayload;
@@ -29,23 +34,39 @@ export async function POST(request: Request) {
   if (!isNonEmptyString(name) || !isNonEmptyString(email) || !isNonEmptyString(message)) {
     return NextResponse.json({ error: "All fields are required." }, { status: 422 });
   }
-
   if (!EMAIL_PATTERN.test(email)) {
     return NextResponse.json({ error: "Please enter a valid email address." }, { status: 422 });
   }
 
-  // Integration point: this route validates the message but does not deliver it.
-  // Plug a transactional email provider (Resend / SendGrid / SMTP) here, e.g.
-  //   await sendEmail({ name, email, message });
-  // See README "Known limitations" — wiring this up is left to the university.
+  const clean = { name: name.trim(), email: email.trim(), message: message.trim() };
+
+  // No database configured → validate only (honest), don't claim it was stored.
+  if (!isSupabaseConfigured) {
+    return NextResponse.json(
+      {
+        ok: true,
+        stored: false,
+        message:
+          "Message validated. A database isn't configured in this build, so it was checked but not stored.",
+      },
+      { status: 200 },
+    );
+  }
+
+  const supabase = createSupabaseServerClient();
+  const result = await insertContactMessage(supabase, clean);
+  if (!result.ok) {
+    return NextResponse.json(
+      { ok: false, stored: false, error: "Sorry, we couldn't save your message. Please try again." },
+      { status: 502 },
+    );
+  }
+
+  // Best-effort notification — never fail the request if email isn't set up.
+  await notifyContactByEmail(clean).catch(() => {});
 
   return NextResponse.json(
-    {
-      ok: true,
-      delivered: false,
-      message:
-        "Validation passed. Email delivery is not configured in this handoff build, so the message was not sent or stored.",
-    },
+    { ok: true, stored: true, message: "Thanks — your message has been received." },
     { status: 200 },
   );
 }

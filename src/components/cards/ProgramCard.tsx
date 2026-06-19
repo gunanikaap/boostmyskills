@@ -1,4 +1,6 @@
+import Link from "next/link";
 import Button from "@/components/ui/Button";
+import { enrolLink } from "@/data/site";
 import type { Program } from "@/lib/types";
 
 export default function ProgramCard({
@@ -27,6 +29,10 @@ export default function ProgramCard({
   // padding-left 20px (pl-5), 1rem text, line-height 1.5rem, #767676.
   const listClass = "mt-4 inline-block list-none space-y-0 text-base";
   const listItemClass = `relative pl-5 ${bodyWeight} leading-6 text-muted before:absolute before:left-0 before:top-0 before:text-muted before:content-['•']`;
+
+  // Enrol destination: Open edX directly in "external" mode, or the local
+  // Supabase-gated /enrol hand-off in "local"/"demo" mode (see enrolLink).
+  const { href: enrolHref, external: enrolExternal } = enrolLink(program);
 
   return (
     <article className={articleClass}>
@@ -76,25 +82,33 @@ export default function ProgramCard({
 
         {isHome ? (
           <div className="absolute bottom-0 left-0 right-0 flex px-6 pb-6 pt-4">
-            <a
-              href={program.enrolUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center"
-            >
-              <span className="inline-flex rounded-full bg-primary px-10 py-4 text-[1.1rem] font-semibold leading-[1.3rem] text-white">
-                Enrol
-              </span>
-            </a>
+            {enrolExternal ? (
+              <a
+                href={enrolHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center"
+              >
+                <span className="inline-flex rounded-full bg-primary px-10 py-4 text-[1.1rem] font-semibold leading-[1.3rem] text-white">
+                  Enrol
+                </span>
+              </a>
+            ) : (
+              <Link href={enrolHref} className="inline-flex items-center">
+                <span className="inline-flex rounded-full bg-primary px-10 py-4 text-[1.1rem] font-semibold leading-[1.3rem] text-white">
+                  Enrol
+                </span>
+              </Link>
+            )}
           </div>
         ) : (
           // Live /programs: plain "Enrol", no arrow, smaller pill, lower-left.
           <div className="absolute bottom-6 left-0 right-0 flex px-6 pt-4">
             <Button
-              href={program.enrolUrl}
+              href={enrolHref}
               variant="primary"
               className="!px-10 !py-4 !text-[1.1rem] !font-semibold !leading-none"
-              external
+              external={enrolExternal}
             >
               Enrol
             </Button>

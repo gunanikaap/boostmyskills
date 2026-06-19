@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import AuthShell from "@/components/auth/AuthShell";
 import AuthForm from "@/components/auth/AuthForm";
+import { safeNextPath } from "@/data/site";
 
 export const metadata: Metadata = {
   title: "Register | BoostMySkills",
@@ -8,12 +9,21 @@ export const metadata: Metadata = {
     "Create a BoostMySkills account. Uses Supabase auth when configured, otherwise a demo screen.",
 };
 
-export default function RegisterPage() {
+export default function RegisterPage({
+  searchParams,
+}: {
+  searchParams: { next?: string };
+}) {
+  // Validate the redirect target so we never bounce to an external URL.
+  const safeNext = safeNextPath(searchParams.next);
+  const nextPath = safeNext === "/" ? undefined : safeNext;
+
   return (
-    <AuthShell active="register">
+    <AuthShell active="register" nextPath={nextPath}>
       <AuthForm
         action="register"
         submitLabel="Register"
+        nextPath={nextPath}
         fields={[
           {
             name: "full_name",

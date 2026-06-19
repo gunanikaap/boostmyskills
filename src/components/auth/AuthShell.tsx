@@ -16,12 +16,18 @@ import { images } from "@/data/site";
 export default function AuthShell({
   active,
   children,
+  nextPath,
 }: {
   active: "register" | "login";
   children: ReactNode;
+  /** Validated, site-relative path to carry through the tab links (?next=). */
+  nextPath?: string;
 }) {
   const tab =
     "flex-1 rounded-full py-2.5 text-center text-sm font-bold transition-colors";
+  // Preserve a pending redirect target when switching between the tabs.
+  const withNext = (path: string) =>
+    nextPath ? `${path}?next=${encodeURIComponent(nextPath)}` : path;
 
   return (
     <div className="fixed inset-0 z-[200] overflow-y-auto bg-surface-alt">
@@ -52,7 +58,7 @@ export default function AuthShell({
           <div className="mx-auto w-full max-w-[440px] rounded-[1.5rem] bg-white p-8 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
             <div className="flex rounded-full bg-surface p-1">
               <Link
-                href="/register"
+                href={withNext("/register")}
                 className={`${tab} ${
                   active === "register"
                     ? "bg-primary text-white"
@@ -62,7 +68,7 @@ export default function AuthShell({
                 Register
               </Link>
               <Link
-                href="/login"
+                href={withNext("/login")}
                 className={`${tab} ${
                   active === "login"
                     ? "bg-primary text-white"

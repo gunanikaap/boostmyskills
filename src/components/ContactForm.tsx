@@ -7,6 +7,7 @@ type Status = "idle" | "submitting" | "success" | "error";
 export default function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string>("");
+  const [successMsg, setSuccessMsg] = useState<string>("");
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -34,6 +35,11 @@ export default function ContactForm() {
       if (!response.ok) {
         throw new Error(data?.error ?? "Something went wrong. Please try again.");
       }
+      setSuccessMsg(
+        typeof data?.message === "string"
+          ? data.message
+          : "Thanks — your message has been received.",
+      );
       setStatus("success");
       form.reset();
     } catch (err) {
@@ -45,12 +51,8 @@ export default function ContactForm() {
   if (status === "success") {
     return (
       <div className="rounded-card border border-line bg-surface p-8 text-center">
-        <h3 className="text-xl font-semibold text-ink">Message validated</h3>
-        <p className="mt-2 text-muted">
-          Demo validation passed &mdash; email delivery is not configured in this
-          handoff build, so the message was not sent. Connect an email provider to
-          deliver messages.
-        </p>
+        <h3 className="text-xl font-semibold text-ink">Message received</h3>
+        <p className="mt-2 text-muted">{successMsg}</p>
         <button
           type="button"
           onClick={() => setStatus("idle")}

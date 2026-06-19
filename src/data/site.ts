@@ -80,6 +80,47 @@ export const authLinks = {
   isExternal: authMode === "external",
 };
 
+/**
+ * Resolve the Enrol button destination for a micro-programme.
+ *
+ *  - "external" mode -> the original Open edX enrolUrl, opened directly (the
+ *    production LMS handles auth + enrolment).
+ *  - "local"/"demo"  -> the in-site /enrol hand-off route, which gates on the
+ *    local Supabase session first (see src/app/enrol/page.tsx). The original
+ *    enrolUrl is never lost: it stays in the programme data and /enrol
+ *    re-derives it from the slug to offer the Open edX hand-off.
+ *
+ * Returns `external: true` only when the link leaves the site (so the caller
+ * renders a new-tab anchor); local links are in-site SPA navigations.
+ */
+export function enrolLink(program: { slug: string; enrolUrl: string }): {
+  href: string;
+  external: boolean;
+} {
+  if (authMode === "external") {
+    return { href: program.enrolUrl, external: true };
+  }
+  return {
+    href: `/enrol?program=${encodeURIComponent(program.slug)}`,
+    external: false,
+  };
+}
+
+/**
+ * Guard a `next` redirect target so we only ever redirect within this site.
+ * Accepts site-relative absolute paths ("/enrol?program=mp1"); rejects external
+ * or protocol-relative URLs ("//evil.com", "/\\evil.com", "https://…") to avoid
+ * an open redirect. Returns `fallback` ("/") when missing or unsafe.
+ */
+export function safeNextPath(
+  next: string | undefined | null,
+  fallback = "/",
+): string {
+  if (!next || !next.startsWith("/")) return fallback;
+  if (next.startsWith("//") || next.startsWith("/\\")) return fallback;
+  return next;
+}
+
 export const primaryNav: { label: string; children: { label: string; href: string }[] } = {
   label: "Catalogue",
   children: [

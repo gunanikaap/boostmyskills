@@ -2,19 +2,15 @@
 
 import { useMemo, useState } from "react";
 import CourseCard from "@/components/cards/CourseCard";
-import { courses } from "@/data/courses";
 import { programs } from "@/data/programs";
-import {
-  projectFacet,
-  orgFacet,
-  topicFacet,
-  programmeFacet,
-} from "@/data/courseFacets";
+import { programmeFacet, type Facet, type OrgFacet } from "@/data/courseFacets";
+import type { Course } from "@/data/courses";
 
 /**
  * Client-side catalogue with a "Search for a course" box and a "Refine Your
  * Search" panel, mirroring the live /courses UI (dropdown facets with floating
- * labels). Data comes from the live Open edX Course API (see src/data/courses.ts).
+ * labels). Course data + facets are passed in from the server, served live from
+ * the Open edX course API with a snapshot fallback (see src/lib/courses).
  */
 
 // Live Micro-Programme facet uses full programme names (see courseFacets.ts).
@@ -42,11 +38,8 @@ for (const p of programs) {
 const courseProgrammes = (name: string) =>
   credentialToProgrammes.get(name.toLowerCase()) ?? new Set<string>();
 
-// Authoritative facet options (names/labels, counts, order) from the live
-// discovery aggregations. Org is keyed by code with a clean display label.
-const projectOptions = projectFacet;
-const orgOptions = orgFacet;
-const topicOptions = topicFacet;
+// Micro-Programme facet is curated metadata (not derivable from the live API),
+// so it stays a static import; the other facets are computed live and passed in.
 const programmeOptions = programmeFacet;
 
 function ChevronIcon({ open }: { open: boolean }) {
@@ -142,7 +135,17 @@ function FacetDropdown({
   );
 }
 
-export default function CourseCatalogue() {
+export default function CourseCatalogue({
+  courses,
+  projectFacet,
+  orgFacet,
+  topicFacet,
+}: {
+  courses: Course[];
+  projectFacet: Facet[];
+  orgFacet: OrgFacet[];
+  topicFacet: Facet[];
+}) {
   const [query, setQuery] = useState("");
   const [activeProjects, setActiveProjects] = useState<Set<string>>(new Set());
   const [activeOrgs, setActiveOrgs] = useState<Set<string>>(new Set());
@@ -181,7 +184,7 @@ export default function CourseCatalogue() {
         matchesProgramme
       );
     });
-  }, [query, activeProjects, activeOrgs, activeTopics, activeProgrammes]);
+  }, [courses, query, activeProjects, activeOrgs, activeTopics, activeProgrammes]);
 
   const clearAll = () => {
     setQuery("");
@@ -268,19 +271,19 @@ export default function CourseCatalogue() {
           <div className="mt-8">
             <FacetDropdown
               label="Project"
-              options={projectOptions}
+              options={projectFacet}
               selected={activeProjects}
               onToggle={(v) => toggleIn(setActiveProjects, v)}
             />
             <FacetDropdown
               label="Organisation"
-              options={orgOptions}
+              options={orgFacet}
               selected={activeOrgs}
               onToggle={(v) => toggleIn(setActiveOrgs, v)}
             />
             <FacetDropdown
               label="Topic"
-              options={topicOptions}
+              options={topicFacet}
               selected={activeTopics}
               onToggle={(v) => toggleIn(setActiveTopics, v)}
             />

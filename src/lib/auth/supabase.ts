@@ -13,7 +13,17 @@ export const supabaseProvider: AuthProvider = {
   async signIn({ email, password }) {
     const supabase = createSupabaseBrowserClient();
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return { status: "error", message: error.message };
+    if (error) {
+      // The account exists but hasn't clicked its confirmation link yet.
+      if (/not confirmed/i.test(error.message)) {
+        return {
+          status: "error",
+          message:
+            "Please confirm your email first — open the confirmation link we sent (check spam), then sign in.",
+        };
+      }
+      return { status: "error", message: error.message };
+    }
     return { status: "success", message: "Signed in successfully." };
   },
 
@@ -25,11 +35,13 @@ export const supabaseProvider: AuthProvider = {
       options: { data: { full_name: fullName ?? "" } },
     });
     if (error) return { status: "error", message: error.message };
-    // When email confirmation is enabled, no session is returned yet.
+    // Email confirmation is enabled: the account is created and stored now, but
+    // no session is returned until the user confirms via the emailed link.
     if (data.user && !data.session) {
       return {
         status: "pending",
-        message: "Account created. Check your email to confirm, then sign in.",
+        message:
+          "Account created and saved. Check your inbox (and spam) for a confirmation link — once confirmed, sign in on the Sign in tab.",
       };
     }
     return { status: "success", message: "Account created and signed in." };

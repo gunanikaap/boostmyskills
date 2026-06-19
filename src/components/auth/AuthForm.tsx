@@ -29,11 +29,14 @@ export default function AuthForm({
   fields,
   submitLabel,
   footer,
+  nextPath,
 }: {
   action: AuthAction;
   fields: AuthField[];
   submitLabel: string;
   footer?: ReactNode;
+  /** Validated, site-relative path to redirect to after a successful auth. */
+  nextPath?: string;
 }) {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
@@ -70,7 +73,10 @@ export default function AuthForm({
     if (res.status === "success") {
       form.reset();
       router.refresh();
-      router.push("/");
+      // Return the user to where they came from (e.g. the /enrol hand-off),
+      // otherwise land on the learner dashboard. nextPath is validated
+      // server-side.
+      router.push(nextPath ?? "/dashboard");
     }
   }
 
